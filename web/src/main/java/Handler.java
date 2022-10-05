@@ -1,5 +1,3 @@
-package ablam;
-
 public interface Handler {
     /**
      * Allows us to handle request made by user. Requests are divided by specific codes.
