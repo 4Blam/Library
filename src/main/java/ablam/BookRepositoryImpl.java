@@ -5,11 +5,11 @@ import java.sql.*;
 import java.util.ArrayList;
 
 /**
- * This is a repository-level class, where we connect to our database, and get data by specified requests
+ * Repository-level class, where we connect to our database, and get data by specified requests
  */
-public class Repository implements BookRepository{
+public class BookRepositoryImpl implements BookRepository{
     private Connection c;
-    public Repository(){
+    public BookRepositoryImpl(){
         DBConnector connector = new DBConnector();
         c = connector.connect();
     }
@@ -51,14 +51,14 @@ public class Repository implements BookRepository{
     }
 
     /**
-     * This method creates Select * SQL statement
+     * Creates Select * SQL statement
      * @return SQL statement that allows us to get info about all books
      */
     private String buildSelectStatement(){
         return "select title,author,published_in from devschema.library;";
     }
     /**
-     * This method creates Select SQL statement by given parameters
+     * Creates Select SQL statement by given parameters
      * @param parameter value of parameter that has to be matched with data from database
      * @param type type of the given parameter(author/title)
      * @return SQL statement that allows us to get info from database
@@ -68,7 +68,7 @@ public class Repository implements BookRepository{
                 "where " + type + "='" + parameter +"';";
     }
     /**
-     * This method creates Insert SQL statement with given parameters
+     * Creates Insert SQL statement with given parameters
      * @param book book that will be inserted
      * @return SQL statement that allows us to insert given info into database
      */
@@ -77,7 +77,7 @@ public class Repository implements BookRepository{
                 + "VALUES ('" + book.getTitle() + "','" + book.getAuthor() + "'," + book.getPublished_in() +");";
     }
     /**
-     * This method inserts answer from database into ArrayList which we will send into service level
+     * Inserts answer from database into ArrayList which we will send into service level
      * @param rs ResultSet that we got after making a select request
      * @param books empty ArrayList, where we will hold books
      */

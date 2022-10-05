@@ -16,10 +16,10 @@ public class ActionHandler implements Handler{
             return;
         }
 
-        Library library = new Library();
+        BookLibraryServiceImpl bookLibraryServiceImpl = new BookLibraryServiceImpl();
 
         if(action == 1){
-            ArrayList<Book> books = library.getAllBooks();
+            ArrayList<Book> books = bookLibraryServiceImpl.getAllBooks();
 
             for (Book b : books){
                 System.out.println(b);
@@ -35,7 +35,7 @@ public class ActionHandler implements Handler{
             String title = scanner.nextLine();
             scanner.close();
 
-            ArrayList<Book> books = library.getBookByTitle(title);
+            ArrayList<Book> books = bookLibraryServiceImpl.getBookByTitle(title);
 
             for (Book b : books){
                 System.out.println(b);
@@ -50,7 +50,7 @@ public class ActionHandler implements Handler{
             String author = scanner.nextLine();
             scanner.close();
 
-            ArrayList<Book> books = library.getBooksByAuthor(author);
+            ArrayList<Book> books = bookLibraryServiceImpl.getBooksByAuthor(author);
 
             for (Book b : books){
                 System.out.println(b);
@@ -68,7 +68,7 @@ public class ActionHandler implements Handler{
             int year = scanner.nextInt();
             scanner.close();
 
-            Book b = library.insertBook(title, author, year);
+            Book b = bookLibraryServiceImpl.insertBook(title, author, year);
             System.out.println("You've inserted this book: " + b);
         }
     }

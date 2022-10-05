@@ -2,7 +2,7 @@ package ablam;
 
 import java.util.ArrayList;
 
-public interface LibraryService {
+public interface BookLibraryService {
     /**
      * Gets array with all books in library
      * @return ArrayList with all books in library

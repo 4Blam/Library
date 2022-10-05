@@ -4,18 +4,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * This is a service-level class, where we get info by requests from repository-level and send it back
+ * Service-level class, where we get info by requests from repository-level and send it back
  * to Web-level
  */
-public class Library implements LibraryService {
-    private Repository repository;
-    public Library(){
-        this.repository = new Repository();
+public class BookLibraryServiceImpl implements BookLibraryService {
+    private BookRepositoryImpl bookRepositoryImpl;
+    public BookLibraryServiceImpl(){
+        this.bookRepositoryImpl = new BookRepositoryImpl();
     }
     public ArrayList<Book> getAllBooks(){
         try {
             BookMapper mapper = new BookMapper();
-            ArrayList<BookEntity> entities = repository.selectAllBooks();
+            ArrayList<BookEntity> entities = bookRepositoryImpl.selectAllBooks();
 
             ArrayList<Book> books = new ArrayList<Book>();
             for (BookEntity e : entities){
@@ -34,7 +34,7 @@ public class Library implements LibraryService {
             Book book = new Book();
             book.setAuthor(author);
             BookMapper mapper = new BookMapper();
-            ArrayList<BookEntity> entities = repository.selectBooksByAuthor(mapper.bookToEntity(book));
+            ArrayList<BookEntity> entities = bookRepositoryImpl.selectBooksByAuthor(mapper.bookToEntity(book));
 
             ArrayList<Book> books = new ArrayList<Book>();
             for (BookEntity e : entities){
@@ -53,7 +53,7 @@ public class Library implements LibraryService {
             Book book = new Book();
             book.setTitle(title);
             BookMapper mapper = new BookMapper();
-            ArrayList<BookEntity> entities = repository.selectBookByTitle(mapper.bookToEntity(book));
+            ArrayList<BookEntity> entities = bookRepositoryImpl.selectBookByTitle(mapper.bookToEntity(book));
 
             ArrayList<Book> books = new ArrayList<Book>();
             for (BookEntity e : entities){
@@ -71,7 +71,7 @@ public class Library implements LibraryService {
             try {
                 Book book = new Book(title, author, year);
                 BookMapper mapper = new BookMapper();
-                BookEntity entity = repository.insertBook(mapper.bookToEntity(book));
+                BookEntity entity = bookRepositoryImpl.insertBook(mapper.bookToEntity(book));
                 return mapper.entityToBook(entity);
             }
             catch (SQLException e){

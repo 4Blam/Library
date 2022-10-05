@@ -2,7 +2,7 @@ package ablam;
 
 public interface Handler {
     /**
-     * This method allows us to handle request made by user. Requests are divided by specific codes.
+     * Allows us to handle request made by user. Requests are divided by specific codes.
      *
      * <ul>
      *  <li>1: user wants to see info about all books we have
