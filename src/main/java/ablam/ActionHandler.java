@@ -1,5 +1,6 @@
 package ablam;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ActionHandler implements Handler{
@@ -15,10 +16,15 @@ public class ActionHandler implements Handler{
             return;
         }
 
-        ActionExecutor actionExecutor = new ActionExecutor();
+        BookLibraryServiceImpl bookLibraryServiceImpl = new BookLibraryServiceImpl();
 
         if(action == 1){
-            actionExecutor.getFullLibraryContent();
+            ArrayList<Book> books = bookLibraryServiceImpl.getAllBooks();
+
+            for (Book b : books){
+                System.out.println(b);
+            }
+
             scanner.close();
             return;
         }
@@ -29,7 +35,12 @@ public class ActionHandler implements Handler{
             String title = scanner.nextLine();
             scanner.close();
 
-            actionExecutor.getBookByTitle(title);
+            ArrayList<Book> books = bookLibraryServiceImpl.getBookByTitle(title);
+
+            for (Book b : books){
+                System.out.println(b);
+            }
+
             return;
         }
         if(action == 3){
@@ -39,7 +50,12 @@ public class ActionHandler implements Handler{
             String author = scanner.nextLine();
             scanner.close();
 
-            actionExecutor.getBooksByAuthor(author);
+            ArrayList<Book> books = bookLibraryServiceImpl.getBooksByAuthor(author);
+
+            for (Book b : books){
+                System.out.println(b);
+            }
+
             return;
         }
         if(action == 4){
@@ -52,7 +68,8 @@ public class ActionHandler implements Handler{
             int year = scanner.nextInt();
             scanner.close();
 
-            actionExecutor.insertValues(title, author, year);
+            Book b = bookLibraryServiceImpl.insertBook(title, author, year);
+            System.out.println("You've inserted this book: " + b);
         }
     }
     }
