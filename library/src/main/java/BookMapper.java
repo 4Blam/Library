@@ -1,5 +1,3 @@
-package ablam;
-
 public class BookMapper {
     public BookEntity bookToEntity(Book book){
         return new BookEntity(book.getAuthor(),

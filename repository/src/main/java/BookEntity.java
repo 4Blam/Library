@@ -1,5 +1,3 @@
-package ablam;
-
 public class BookEntity {
     private String author;
     private String title;

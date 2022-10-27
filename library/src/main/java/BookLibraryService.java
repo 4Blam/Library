@@ -1,5 +1,3 @@
-package ablam;
-
 import java.util.ArrayList;
 
 public interface BookLibraryService {

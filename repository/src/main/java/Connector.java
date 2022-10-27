@@ -1,5 +1,3 @@
-package ablam;
-
 import java.sql.Connection;
 
 public interface Connector {

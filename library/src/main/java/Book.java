@@ -1,5 +1,3 @@
-package ablam;
-
 /**
  * This class implements a Book in library
  */
