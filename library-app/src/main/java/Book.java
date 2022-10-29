@@ -2,8 +2,17 @@
  * This class implements a Book in library
  */
 public class Book {
+    /**
+     * Book's author
+     */
     private String author;
+    /**
+     * Book's title
+     */
     private String title;
+    /**
+     * Year, when book was published
+     */
     private int published_in;
     public Book(){}
     public Book(String author, String title, int published_in) {

@@ -1,6 +1,18 @@
+/**
+ * This class implements a book entity in database
+ */
 public class BookEntity {
+    /**
+     * Author of a book that is represented by this entity
+     */
     private String author;
+    /**
+     * Title of a book that is represented by this entity
+     */
     private String title;
+    /**
+     * Year when book that is represented by this entity was published
+     */
     private int published_in;
 
     public BookEntity(String author, String title, int published_in) {

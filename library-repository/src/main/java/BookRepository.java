@@ -1,6 +1,15 @@
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/**
+ * This interface provides two methods for getting book-entities with specified parameters:
+ *<ul>
+ *      *  <li>1: by author
+ *      *  <li>2: by title
+ *</ul>
+ * One method for getting info about all books in library
+ * And one method for inserting a book-entity into library
+ */
 public interface BookRepository {
     /**
      * Performs actual select statement in our database and returns all books
