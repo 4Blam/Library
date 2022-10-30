@@ -14,7 +14,7 @@ public class BookEntity {
      * Year when book that is represented by this entity was published
      */
     private int published_in;
-
+    public BookEntity() {}
     public BookEntity(String author, String title, int published_in) {
         this.author = author;
         this.title = title;

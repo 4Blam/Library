@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class ActionHandler implements Handler{
@@ -8,16 +8,18 @@ public class ActionHandler implements Handler{
     }
 
     public void handleAction(int action){
-
-        if ((action < 1) || (action > 4)) {
-            scanner.close();
-            return;
-        }
-
         BookLibraryServiceImpl bookLibraryServiceImpl = new BookLibraryServiceImpl();
 
         if(action == 1){
-            ArrayList<Book> books = bookLibraryServiceImpl.getAllBooks();
+            scanner.close();
+            List<Book> books;
+
+            try {
+                books = bookLibraryServiceImpl.getAllBooks();
+            } catch (Exception e){
+                System.out.println("Couldn't complete your request, something went wrong");
+                return;
+            }
 
             for (Book b : books){
                 System.out.println(b);
@@ -33,7 +35,14 @@ public class ActionHandler implements Handler{
             String title = scanner.nextLine();
             scanner.close();
 
-            ArrayList<Book> books = bookLibraryServiceImpl.getBookByTitle(title);
+            List<Book> books;
+
+            try {
+                books = bookLibraryServiceImpl.getBookByTitle(title);
+            } catch (Exception e){
+                System.out.println("Couldn't complete your request, something went wrong");
+                return;
+            }
 
             for (Book b : books){
                 System.out.println(b);
@@ -48,7 +57,14 @@ public class ActionHandler implements Handler{
             String author = scanner.nextLine();
             scanner.close();
 
-            ArrayList<Book> books = bookLibraryServiceImpl.getBooksByAuthor(author);
+            List<Book> books;
+
+            try {
+                books = bookLibraryServiceImpl.getBooksByAuthor(author);
+            } catch (Exception e){
+                System.out.println("Couldn't complete your request, something went wrong");
+                return;
+            }
 
             for (Book b : books){
                 System.out.println(b);
@@ -66,8 +82,12 @@ public class ActionHandler implements Handler{
             int year = scanner.nextInt();
             scanner.close();
 
-            Book b = bookLibraryServiceImpl.insertBook(title, author, year);
-            System.out.println("You've inserted this book: " + b);
+            try {
+                Book bookToInsert = bookLibraryServiceImpl.insertBook(title, author, year);
+                System.out.println("You've inserted this book: " + bookToInsert);
+            } catch (Exception e){
+                System.out.println("Couldn't insert this book, something went wrong");
+            }
         }
     }
     }
