@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class ActionHandler implements Handler{
@@ -17,7 +18,7 @@ public class ActionHandler implements Handler{
         BookLibraryServiceImpl bookLibraryServiceImpl = new BookLibraryServiceImpl();
 
         if(action == 1){
-            ArrayList<Book> books = bookLibraryServiceImpl.getAllBooks();
+            List<Book> books = bookLibraryServiceImpl.getAllBooks();
 
             for (Book b : books){
                 System.out.println(b);
@@ -33,7 +34,7 @@ public class ActionHandler implements Handler{
             String title = scanner.nextLine();
             scanner.close();
 
-            ArrayList<Book> books = bookLibraryServiceImpl.getBookByTitle(title);
+            List<Book> books = bookLibraryServiceImpl.getBookByTitle(title);
 
             for (Book b : books){
                 System.out.println(b);
@@ -48,7 +49,7 @@ public class ActionHandler implements Handler{
             String author = scanner.nextLine();
             scanner.close();
 
-            ArrayList<Book> books = bookLibraryServiceImpl.getBooksByAuthor(author);
+            List<Book> books = bookLibraryServiceImpl.getBooksByAuthor(author);
 
             for (Book b : books){
                 System.out.println(b);

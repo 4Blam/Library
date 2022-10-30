@@ -1,81 +1,118 @@
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Service-level class, where we get info by requests from repository-level and send it back
  * to Web-level
  */
 public class BookLibraryServiceImpl implements BookLibraryService {
+    static Logger logger = LoggerFactory.getLogger(BookLibraryServiceImpl.class);
     private BookRepositoryImpl bookRepositoryImpl;
     public BookLibraryServiceImpl(){
-        this.bookRepositoryImpl = new BookRepositoryImpl();
-    }
-    public ArrayList<Book> getAllBooks(){
         try {
-            BookMapper mapper = new BookMapper();
-            ArrayList<BookEntity> entities = bookRepositoryImpl.selectAllBooks();
-
-            ArrayList<Book> books = new ArrayList<Book>();
-            for (BookEntity e : entities){
-                books.add(mapper.entityToBook(e));
-            }
-
-            return books;
+            this.bookRepositoryImpl = new BookRepositoryImpl();
+        } catch (NullPointerException e) {
+            logger.error("Couldn't create bookRepImpl because can't connect to database because: \n" + e.getMessage());
         }
-        catch (SQLException e){
-            System.out.println(e.getMessage());
-        }
-        return null;
     }
-    public ArrayList<Book> getBooksByAuthor(String author){
-        try {
-            Book book = new Book();
-            book.setAuthor(author);
-            BookMapper mapper = new BookMapper();
-            ArrayList<BookEntity> entities = bookRepositoryImpl.selectBooksByAuthor(mapper.bookToEntity(book));
-
-            ArrayList<Book> books = new ArrayList<Book>();
-            for (BookEntity e : entities){
-                books.add(mapper.entityToBook(e));
-            }
-
-            return books;
-        }
-        catch (SQLException e){
-            System.out.println(e.getMessage());
-        }
-        return null;
+    public BookLibraryServiceImpl(BookRepositoryImpl repository){
+        this.bookRepositoryImpl = repository;
     }
-    public ArrayList<Book> getBookByTitle(String title){
+    public List<Book> getAllBooks(){
+        BookMapper mapper = new BookMapper();
+        List<BookEntity> entities = new ArrayList<>();
+        List<Book> books = new ArrayList<>();
+
         try {
-            Book book = new Book();
-            book.setTitle(title);
-            BookMapper mapper = new BookMapper();
-            ArrayList<BookEntity> entities = bookRepositoryImpl.selectBookByTitle(mapper.bookToEntity(book));
-
-            ArrayList<Book> books = new ArrayList<Book>();
-            for (BookEntity e : entities){
-                books.add(mapper.entityToBook(e));
-            }
-
-            return books;
+            entities = bookRepositoryImpl.selectAllBooks();
+        } catch (NullPointerException e){
+            throw(e);//запутался
+            //logger.error("Couldn't complete request because: \n" + e.getMessage());
+        } catch (SQLException e){
+            logger.error("Wrong SQL request: \n" + e.getMessage());
+        } catch (IndexOutOfBoundsException e) {
+            logger.error("Couldn't handle request's result: \n" + e.getMessage());
         }
-        catch (SQLException e){
-            System.out.println(e.getMessage());
+
+        for (BookEntity e : entities){
+            books.add(mapper.entityToBook(e));
         }
-        return null;
+        if(books.isEmpty()){
+            return Collections.EMPTY_LIST;
+        }
+        return books;
+    }
+    public List<Book> getBooksByAuthor(String author){
+        Book book = new Book();
+        book.setAuthor(author);
+        BookMapper mapper = new BookMapper();
+        List<BookEntity> entities = new ArrayList<>();
+        List<Book> books = new ArrayList<>();
+
+        try {
+            entities = bookRepositoryImpl.selectBooksByAuthor(mapper.bookToEntity(book));
+        } catch (NullPointerException e){
+            logger.error("Couldn't complete request because: \n" + e.getMessage());
+        } catch (SQLException e){
+            logger.error("Wrong SQL request: \n" + e.getMessage());
+        } catch (IndexOutOfBoundsException e) {
+            logger.error("Couldn't handle request's result: \n" + e.getMessage());
+        }
+
+        for (BookEntity e : entities){
+            books.add(mapper.entityToBook(e));
+        }
+        if(books.isEmpty()){
+            return Collections.EMPTY_LIST;
+        }
+        return books;
+    }
+
+    public List<Book> getBookByTitle(String title){
+
+        Book book = new Book();
+        book.setTitle(title);
+        BookMapper mapper = new BookMapper();
+        List<BookEntity> entities = new ArrayList<>();
+        List<Book> books = new ArrayList<>();
+
+        try {
+            entities = bookRepositoryImpl.selectBookByTitle(mapper.bookToEntity(book));
+        } catch (NullPointerException e){
+            logger.error("Couldn't complete request because: \n" + e.getMessage());
+        } catch (SQLException e){
+            logger.error("Wrong SQL request: \n" + e.getMessage());
+        } catch (IndexOutOfBoundsException e) {
+            logger.error("Couldn't handle request's result: \n" + e.getMessage());
+        }
+
+        for (BookEntity e : entities){
+            books.add(mapper.entityToBook(e));
+        }
+        if(books.isEmpty()){
+            return Collections.EMPTY_LIST;
+        }
+        return books;
+
     }
     public Book insertBook(String title, String author, int year){
-            try {
-                Book book = new Book(title, author, year);
-                BookMapper mapper = new BookMapper();
-                BookEntity entity = bookRepositoryImpl.insertBook(mapper.bookToEntity(book));
-                return mapper.entityToBook(entity);
-            }
-            catch (SQLException e){
-                System.out.println(e.getMessage());
-            }
-            return null;
+        Book book = new Book(title, author, year);
+        BookMapper mapper = new BookMapper();
+        BookEntity entity = new BookEntity();
+        try {
+            entity = bookRepositoryImpl.insertBook(mapper.bookToEntity(book));
+        } catch (NullPointerException e){
+            logger.error("Couldn't complete request because: \n" + e.getMessage());
+        } catch (SQLException e){
+            logger.error("Wrong SQL request: \n" + e.getMessage());
+        }
+        //Если пустая книга? ИЗначально не давать вставить пустую инфу? (аннотации NotNull на параметрах)
+        //Или ограничивать только внутри этой функции?
+        return mapper.entityToBook(entity);
     }
 
 }
