@@ -7,78 +7,126 @@ import java.util.List;
  * Repository-level class, where we connect to our database, and get data by specified requests
  */
 public class BookRepositoryImpl implements BookRepository{
-    private DBConnector dbConnector;
-    Connection c;
+    private final DBConnector dbConnector;
+    private Connection c;
     public BookRepositoryImpl(){
         this.dbConnector = new DBConnector();
     }
-    public List<BookEntity> selectAllBooks() throws SQLException{
-        c = dbConnector.connect();
-        Statement stmt = c.createStatement();
-
-        ResultSet rs = null;
+    public List<BookEntity> selectAllBooks() throws IllegalAccessException, IllegalStateException, IllegalArgumentException {
+        ResultSet rs;
         List<BookEntity> entitiesList = new ArrayList<>();
 
-        rs = stmt.executeQuery(buildSelectStatement());
+        c = dbConnector.connect();
 
-        insertResultSetIntoGivenArray(rs, entitiesList);
+        try {
+            Statement stmt = c.createStatement();
+            rs = stmt.executeQuery(buildSelectStatement());
+        } catch (SQLException e){
+
+            try{
+                c.close();
+            } catch (SQLException closingException){
+                throw new IllegalAccessException(closingException.getMessage());
+            }
+
+            throw new IllegalStateException(e.getMessage());
+        }
+
+        try {
+            insertResultSetIntoGivenArray(rs, entitiesList);
+        } catch (IllegalArgumentException e){
+            throw e;
+        } finally {
+            try {
+                c.close();
+            } catch (SQLException closingException){
+                throw new IllegalAccessException(closingException.getMessage());
+            }
+        }
 
         return entitiesList;
     }
-    public List<BookEntity> selectBooksByAuthor(BookEntity bookEntity) throws SQLException, NullPointerException{
-        c = dbConnector.connect();
-        Statement stmt = c.createStatement();
+    public List<BookEntity> selectBooksByAuthor(BookEntity bookEntity) throws IllegalAccessException, IllegalStateException, IllegalArgumentException {
+        ResultSet rs;
+        List<BookEntity> entitiesList = new ArrayList<>();
 
-        ResultSet rs = null;
-        List<BookEntity> entitiesList = new ArrayList<BookEntity>();
+        c = dbConnector.connect();
 
         try {
+            Statement stmt = c.createStatement();
             rs = stmt.executeQuery(buildSelectStatementByParameter(bookEntity.getAuthor(), "author"));
-            if (rs != null) {
-                insertResultSetIntoGivenArray(rs, entitiesList);
-            }
         } catch (SQLException e){
-            throw e;
-        } catch (IndexOutOfBoundsException e) {
+
+            try{
+                c.close();
+            } catch (SQLException closingException){
+                throw new IllegalAccessException(closingException.getMessage());
+            }
+
+            throw new IllegalStateException(e.getMessage());
+        }
+
+        try {
+            insertResultSetIntoGivenArray(rs, entitiesList);
+        } catch (IllegalArgumentException e){
             throw e;
         } finally {
-            c.close();
+            try {
+                c.close();
+            } catch (SQLException closingException){
+                throw new IllegalAccessException(closingException.getMessage());
+            }
         }
 
         return entitiesList;
     }
-    public List<BookEntity> selectBookByTitle(BookEntity bookEntity) throws SQLException, NullPointerException{
-        c = dbConnector.connect();
-        Statement stmt = c.createStatement();
+    public List<BookEntity> selectBookByTitle(BookEntity bookEntity) throws IllegalAccessException, IllegalStateException, IllegalArgumentException {
+        ResultSet rs;
+        List<BookEntity> entitiesList = new ArrayList<>();
 
-        ResultSet rs = null;
-        List<BookEntity> entitiesList = new ArrayList<BookEntity>();
+        c = dbConnector.connect();
 
         try {
+            Statement stmt = c.createStatement();
             rs = stmt.executeQuery(buildSelectStatementByParameter(bookEntity.getTitle(), "title"));
-            if (rs != null) {
-                insertResultSetIntoGivenArray(rs, entitiesList);
-            }
         } catch (SQLException e){
-            throw e;
-        } catch (IndexOutOfBoundsException e) {
+
+            try{
+                c.close();
+            } catch (SQLException closingException){
+                throw new IllegalAccessException(closingException.getMessage());
+            }
+
+            throw new IllegalStateException(e.getMessage());
+        }
+
+        try {
+            insertResultSetIntoGivenArray(rs, entitiesList);
+        } catch (IllegalArgumentException e){
             throw e;
         } finally {
-            c.close();
+            try {
+                c.close();
+            } catch (SQLException closingException){
+                throw new IllegalAccessException(closingException.getMessage());
+            }
         }
 
         return entitiesList;
     }
-    public BookEntity insertBook(BookEntity bookEntity) throws SQLException, NullPointerException {
+    public BookEntity insertBook(BookEntity bookEntity) throws IllegalAccessException {
         c = dbConnector.connect();
-        Statement stmt = c.createStatement();
-
         try {
+            Statement stmt = c.createStatement();
             stmt.executeUpdate(buildInsertStatementByGivenBook(bookEntity));
         } catch (SQLException e){
-            throw e;
+            throw new IllegalStateException(e.getMessage());
         } finally {
-            c.close();
+            try {
+                c.close();
+            } catch (SQLException closingException){
+                throw new IllegalAccessException(closingException.getMessage());
+            }
         }
 
         return bookEntity;
@@ -89,7 +137,7 @@ public class BookRepositoryImpl implements BookRepository{
      * @return SQL statement that allows us to get info about all books
      */
     private String buildSelectStatement(){
-        return "select title,author,published_in from library;";
+        return "select author,title,published_in from library;";
     }
     /**
      * Creates Select SQL statement by given parameters
@@ -98,7 +146,7 @@ public class BookRepositoryImpl implements BookRepository{
      * @return SQL statement that allows us to get info from database
      */
     private String buildSelectStatementByParameter(String parameter, String type){
-        return "select title,author,published_in from library " +
+        return "select author,title,published_in from library " +
                 "where " + type + "='" + parameter +"';";
     }
     /**
@@ -114,13 +162,18 @@ public class BookRepositoryImpl implements BookRepository{
      * Inserts answer from database into ArrayList which we will send into service level
      * @param rs ResultSet that we got after making a select request
      * @param books empty ArrayList, where we will hold books
+     * @throws IllegalArgumentException when there is something wrong with given ResultSet
      */
-    private void insertResultSetIntoGivenArray(ResultSet rs, List<BookEntity> books) throws SQLException{
-        while(rs.next()){
-            books.add(new BookEntity(
-                    rs.getString(1).trim(),
-                    rs.getString(2).trim(),
-                    Integer.valueOf(rs.getString(3))));
+    private void insertResultSetIntoGivenArray(ResultSet rs, List<BookEntity> books) throws IllegalArgumentException{
+        try {
+            while (rs.next()) {
+                books.add(new BookEntity(
+                        rs.getString(1).trim(),
+                        rs.getString(2).trim(),
+                        Integer.valueOf(rs.getString(3))));
+            }
+        } catch (SQLException e){
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
     private class DBConnector implements Connector{
@@ -129,12 +182,12 @@ public class BookRepositoryImpl implements BookRepository{
         private final String user = "ablam";
         private final String password = "delamland";
 
-        public Connection connect() {
-            Connection conn = null;
+        public Connection connect() throws IllegalAccessException {
+            Connection conn;
             try {
                 conn = DriverManager.getConnection(url, user, password);
             } catch (SQLException e) {
-                throw new NullPointerException(e.getMessage());
+                throw new IllegalAccessException(e.getMessage());
             }
             return conn;
         }

@@ -1,5 +1,3 @@
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -64,8 +62,6 @@ public class ActionHandler implements Handler{
             try {
                 books = bookLibraryServiceImpl.getBooksByAuthor(author);
             } catch (Exception e){
-                System.out.println(e.getMessage());
-
                 System.out.println("Couldn't complete your request, something went wrong");
                 return;
             }
@@ -86,8 +82,12 @@ public class ActionHandler implements Handler{
             int year = scanner.nextInt();
             scanner.close();
 
-            Book b = bookLibraryServiceImpl.insertBook(title, author, year);
-            System.out.println("You've inserted this book: " + b);
+            try {
+                Book bookToInsert = bookLibraryServiceImpl.insertBook(title, author, year);
+                System.out.println("You've inserted this book: " + bookToInsert);
+            } catch (Exception e){
+                System.out.println("Couldn't insert this book, something went wrong");
+            }
         }
     }
     }

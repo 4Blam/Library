@@ -1,4 +1,3 @@
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,10 +27,16 @@ public class BookLibraryServiceImpl implements BookLibraryService {
 
         try {
             entities = bookRepositoryImpl.selectAllBooks();
-        } catch (SQLException e){
-            logger.error("Couldn't complete request because: " + e.getMessage());
-            bookRepositoryImpl.c.close();;
-            throw e;
+        } catch (IllegalAccessException accessError){
+            logger.error("Couldn't access database because: " + accessError.getMessage());
+            throw accessError;
+        } catch (IllegalStateException wrongState){
+            logger.error("Couldn't complete request because tried to do it in wrong database state: "
+                    + wrongState.getMessage());
+            throw wrongState;
+        } catch (IllegalArgumentException wrongResult){
+            logger.error("Couldn't handle result due to: " + wrongResult.getMessage());
+            throw wrongResult;
         }
 
         for (BookEntity e : entities){
@@ -39,8 +44,7 @@ public class BookLibraryServiceImpl implements BookLibraryService {
         }
 
         if(books.isEmpty()){
-            //return Collections.EMPTY_LIST;
-            return null;
+            return Collections.EMPTY_LIST;
         }
 
         return books;
@@ -55,15 +59,16 @@ public class BookLibraryServiceImpl implements BookLibraryService {
 
         try {
             entities = bookRepositoryImpl.selectBooksByAuthor(mapper.bookToEntity(book));
-        } catch (NullPointerException e){
-            logger.error("Couldn't complete request because: " + e.getMessage());
-            throw e;
-        } catch (SQLException e){
-            logger.error("Wrong SQL request: " + e.getMessage());
-            throw e;
-        } catch (IndexOutOfBoundsException e) {
-            logger.error("Couldn't handle request's result: " + e.getMessage());
-            throw e;
+        } catch (IllegalAccessException accessError){
+            logger.error("Couldn't access database because: " + accessError.getMessage());
+            throw accessError;
+        } catch (IllegalStateException wrongState){
+            logger.error("Couldn't complete request because tried to do it in wrong database state: "
+                    + wrongState.getMessage());
+            throw wrongState;
+        } catch (IllegalArgumentException wrongResult){
+            logger.error("Couldn't handle result due to: " + wrongResult.getMessage());
+            throw wrongResult;
         }
 
         for (BookEntity e : entities){
@@ -71,13 +76,12 @@ public class BookLibraryServiceImpl implements BookLibraryService {
         }
 
         if(books.isEmpty()){
-            return null;
-            //return Collections.EMPTY_LIST;
+            return Collections.EMPTY_LIST;
         }
 
         return books;
     }
-
+    @NotNull
     public List<Book> getBookByTitle(String title) throws Exception {
 
         Book book = new Book();
@@ -88,15 +92,16 @@ public class BookLibraryServiceImpl implements BookLibraryService {
 
         try {
             entities = bookRepositoryImpl.selectBookByTitle(mapper.bookToEntity(book));
-        } catch (NullPointerException e){
-            logger.error("Couldn't complete request because: " + e.getMessage());
-            throw e;
-        } catch (SQLException e){
-            logger.error("Wrong SQL request: " + e.getMessage());
-            throw e;
-        } catch (IndexOutOfBoundsException e) {
-            logger.error("Couldn't handle request's result: " + e.getMessage());
-            throw e;
+        } catch (IllegalAccessException accessError){
+            logger.error("Couldn't access database because: " + accessError.getMessage());
+            throw accessError;
+        } catch (IllegalStateException wrongState){
+            logger.error("Couldn't complete request because tried to do it in wrong database state: "
+                    + wrongState.getMessage());
+            throw wrongState;
+        } catch (IllegalArgumentException wrongResult){
+            logger.error("Couldn't handle result due to: " + wrongResult.getMessage());
+            throw wrongResult;
         }
 
         for (BookEntity e : entities){
@@ -110,19 +115,21 @@ public class BookLibraryServiceImpl implements BookLibraryService {
         return books;
 
     }
-    public Book insertBook(String title, String author, int year){
-        Book book = new Book(title, author, year);
+    @NotNull
+    public Book insertBook(String title, String author, int year) throws Exception{
+        Book book = new Book(author, title, year);
         BookMapper mapper = new BookMapper();
-        BookEntity entity = new BookEntity();
+        BookEntity entity;
         try {
             entity = bookRepositoryImpl.insertBook(mapper.bookToEntity(book));
-        } catch (NullPointerException e){
-            logger.error("Couldn't complete request because: \n" + e.getMessage());
-        } catch (SQLException e){
-            logger.error("Wrong SQL request: \n" + e.getMessage());
+        } catch (IllegalAccessException accessError){
+            logger.error("Couldn't access database because: " + accessError.getMessage());
+            throw accessError;
+        } catch (IllegalStateException wrongState){
+            logger.error("Couldn't complete request because tried to do it in wrong database state: "
+                    + wrongState.getMessage());
+            throw wrongState;
         }
-        //Если пустая книга? ИЗначально не давать вставить пустую инфу? (аннотации NotNull на параметрах)
-        //Или ограничивать только внутри этой функции?
         return mapper.entityToBook(entity);
     }
 
