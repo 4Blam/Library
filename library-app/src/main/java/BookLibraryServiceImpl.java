@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
@@ -13,89 +14,99 @@ public class BookLibraryServiceImpl implements BookLibraryService {
     static Logger logger = LoggerFactory.getLogger(BookLibraryServiceImpl.class);
     private BookRepositoryImpl bookRepositoryImpl;
     public BookLibraryServiceImpl(){
-        try {
-            this.bookRepositoryImpl = new BookRepositoryImpl();
-        } catch (NullPointerException e) {
-            logger.error("Couldn't create bookRepImpl because can't connect to database because: \n" + e.getMessage());
-        }
+        this.bookRepositoryImpl = new BookRepositoryImpl();
     }
     public BookLibraryServiceImpl(BookRepositoryImpl repository){
         this.bookRepositoryImpl = repository;
     }
-    public List<Book> getAllBooks(){
+
+    @NotNull
+    public List<Book> getAllBooks() throws Exception {
         BookMapper mapper = new BookMapper();
-        List<BookEntity> entities = new ArrayList<>();
+        List<BookEntity> entities;
         List<Book> books = new ArrayList<>();
 
         try {
             entities = bookRepositoryImpl.selectAllBooks();
-        } catch (NullPointerException e){
-            throw(e);//запутался
-            //logger.error("Couldn't complete request because: \n" + e.getMessage());
         } catch (SQLException e){
-            logger.error("Wrong SQL request: \n" + e.getMessage());
-        } catch (IndexOutOfBoundsException e) {
-            logger.error("Couldn't handle request's result: \n" + e.getMessage());
+            logger.error("Couldn't complete request because: " + e.getMessage());
+            bookRepositoryImpl.c.close();;
+            throw e;
         }
 
         for (BookEntity e : entities){
             books.add(mapper.entityToBook(e));
         }
+
         if(books.isEmpty()){
-            return Collections.EMPTY_LIST;
+            //return Collections.EMPTY_LIST;
+            return null;
         }
+
         return books;
     }
-    public List<Book> getBooksByAuthor(String author){
+    @NotNull
+    public List<Book> getBooksByAuthor(String author) throws Exception {
         Book book = new Book();
         book.setAuthor(author);
         BookMapper mapper = new BookMapper();
-        List<BookEntity> entities = new ArrayList<>();
+        List<BookEntity> entities;
         List<Book> books = new ArrayList<>();
 
         try {
             entities = bookRepositoryImpl.selectBooksByAuthor(mapper.bookToEntity(book));
         } catch (NullPointerException e){
-            logger.error("Couldn't complete request because: \n" + e.getMessage());
+            logger.error("Couldn't complete request because: " + e.getMessage());
+            throw e;
         } catch (SQLException e){
-            logger.error("Wrong SQL request: \n" + e.getMessage());
+            logger.error("Wrong SQL request: " + e.getMessage());
+            throw e;
         } catch (IndexOutOfBoundsException e) {
-            logger.error("Couldn't handle request's result: \n" + e.getMessage());
+            logger.error("Couldn't handle request's result: " + e.getMessage());
+            throw e;
         }
 
         for (BookEntity e : entities){
             books.add(mapper.entityToBook(e));
         }
+
         if(books.isEmpty()){
-            return Collections.EMPTY_LIST;
+            return null;
+            //return Collections.EMPTY_LIST;
         }
+
         return books;
     }
 
-    public List<Book> getBookByTitle(String title){
+    public List<Book> getBookByTitle(String title) throws Exception {
 
         Book book = new Book();
         book.setTitle(title);
         BookMapper mapper = new BookMapper();
-        List<BookEntity> entities = new ArrayList<>();
+        List<BookEntity> entities;
         List<Book> books = new ArrayList<>();
 
         try {
             entities = bookRepositoryImpl.selectBookByTitle(mapper.bookToEntity(book));
         } catch (NullPointerException e){
-            logger.error("Couldn't complete request because: \n" + e.getMessage());
+            logger.error("Couldn't complete request because: " + e.getMessage());
+            throw e;
         } catch (SQLException e){
-            logger.error("Wrong SQL request: \n" + e.getMessage());
+            logger.error("Wrong SQL request: " + e.getMessage());
+            throw e;
         } catch (IndexOutOfBoundsException e) {
-            logger.error("Couldn't handle request's result: \n" + e.getMessage());
+            logger.error("Couldn't handle request's result: " + e.getMessage());
+            throw e;
         }
 
         for (BookEntity e : entities){
             books.add(mapper.entityToBook(e));
         }
+
         if(books.isEmpty()){
             return Collections.EMPTY_LIST;
         }
+
         return books;
 
     }

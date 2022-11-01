@@ -1,3 +1,4 @@
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -9,16 +10,18 @@ public class ActionHandler implements Handler{
     }
 
     public void handleAction(int action){
-
-        if ((action < 1) || (action > 4)) {
-            scanner.close();
-            return;
-        }
-
         BookLibraryServiceImpl bookLibraryServiceImpl = new BookLibraryServiceImpl();
 
         if(action == 1){
-            List<Book> books = bookLibraryServiceImpl.getAllBooks();
+            scanner.close();
+            List<Book> books;
+
+            try {
+                books = bookLibraryServiceImpl.getAllBooks();
+            } catch (Exception e){
+                System.out.println("Couldn't complete your request, something went wrong");
+                return;
+            }
 
             for (Book b : books){
                 System.out.println(b);
@@ -34,7 +37,14 @@ public class ActionHandler implements Handler{
             String title = scanner.nextLine();
             scanner.close();
 
-            List<Book> books = bookLibraryServiceImpl.getBookByTitle(title);
+            List<Book> books;
+
+            try {
+                books = bookLibraryServiceImpl.getBookByTitle(title);
+            } catch (Exception e){
+                System.out.println("Couldn't complete your request, something went wrong");
+                return;
+            }
 
             for (Book b : books){
                 System.out.println(b);
@@ -49,7 +59,16 @@ public class ActionHandler implements Handler{
             String author = scanner.nextLine();
             scanner.close();
 
-            List<Book> books = bookLibraryServiceImpl.getBooksByAuthor(author);
+            List<Book> books;
+
+            try {
+                books = bookLibraryServiceImpl.getBooksByAuthor(author);
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+
+                System.out.println("Couldn't complete your request, something went wrong");
+                return;
+            }
 
             for (Book b : books){
                 System.out.println(b);

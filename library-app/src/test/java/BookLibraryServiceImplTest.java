@@ -22,7 +22,7 @@ public class BookLibraryServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
     @Test
-    public void getAllBooks_returnBooks() throws SQLException {
+    public void getAllBooks_returnBooks() throws Exception {
         System.out.println("TEST getAllBooks_returnBooks is executed");
         service = new BookLibraryServiceImpl(impl);
 
@@ -37,7 +37,7 @@ public class BookLibraryServiceImplTest {
         assertEquals(service.getAllBooks().getClass(), books.getClass());
     }
     @Test
-    public void getAllBooks_returnsEmptyList_whenBooksDontExist() throws SQLException {
+    public void getAllBooks_returnsEmptyList_whenBooksDontExist() throws Exception {
         System.out.println("TEST getAllBooks_returnsEmptyList_whenBooksDontExist is executed");
         service = new BookLibraryServiceImpl(impl);
 
@@ -47,8 +47,8 @@ public class BookLibraryServiceImplTest {
 
         assertEquals(service.getAllBooks(), Collections.EMPTY_LIST);
     }
-    @Test(expected = NullPointerException.class)
-    public void getAllBooks_throwsException_whenProblemWithAccess(){
+    @Test(expected = Exception.class)
+    public void getAllBooks_throwsException_whenProblemWithAccess() throws Exception {
         System.out.println("TEST getAllBooks_throwsException_whenProblemWithAccess is executed");
         service = new BookLibraryServiceImpl(null);
 

@@ -13,21 +13,21 @@ public interface BookLibraryService {
      * Gets array with all books in library
      * @return ArrayList with all books in library
      */
-    List<Book> getAllBooks();
+    List<Book> getAllBooks() throws Exception;
 
     /**
      * Gets array with books with the specified author
      * @param author author's name and surname
      * @return ArrayList that contains books written by given author
      */
-    List<Book> getBooksByAuthor(String author);
+    List<Book> getBooksByAuthor(String author) throws Exception;
 
     /**
      * Gets array with a book with given title
      * @param title book's title
      * @return ArrayList that contains books with given title
      */
-    List<Book> getBookByTitle(String title);
+    List<Book> getBookByTitle(String title) throws Exception;
 
     /**
      * Insert given values into library

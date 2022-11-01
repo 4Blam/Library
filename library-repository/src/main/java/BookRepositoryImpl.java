@@ -7,75 +7,76 @@ import java.util.List;
  * Repository-level class, where we connect to our database, and get data by specified requests
  */
 public class BookRepositoryImpl implements BookRepository{
-    private Connection c;
+    private DBConnector dbConnector;
+    Connection c;
     public BookRepositoryImpl(){
-        DBConnector connector = new DBConnector();
-        try {
-            c = connector.connect();
-        } catch (NullPointerException e){
-            throw e;
-        }
+        this.dbConnector = new DBConnector();
     }
-    public List<BookEntity> selectAllBooks() throws SQLException, IndexOutOfBoundsException{
+    public List<BookEntity> selectAllBooks() throws SQLException{
+        c = dbConnector.connect();
         Statement stmt = c.createStatement();
+
         ResultSet rs = null;
+        List<BookEntity> entitiesList = new ArrayList<>();
 
-        try {
-            rs = stmt.executeQuery(buildSelectStatement());
-        } catch (SQLException e){
-            //Что-то подх. серв уровню
-        } finally {
-            c.close();
-        }
+        rs = stmt.executeQuery(buildSelectStatement());
 
-        List<BookEntity> entitiesList = new ArrayList<BookEntity>();
-        if(rs!=null) {
-            insertResultSetIntoGivenArray(rs, entitiesList);
-        }
+        insertResultSetIntoGivenArray(rs, entitiesList);
+
         return entitiesList;
     }
-    public List<BookEntity> selectBooksByAuthor(BookEntity bookEntity) throws SQLException, IndexOutOfBoundsException{
+    public List<BookEntity> selectBooksByAuthor(BookEntity bookEntity) throws SQLException, NullPointerException{
+        c = dbConnector.connect();
         Statement stmt = c.createStatement();
+
         ResultSet rs = null;
+        List<BookEntity> entitiesList = new ArrayList<BookEntity>();
 
         try {
             rs = stmt.executeQuery(buildSelectStatementByParameter(bookEntity.getAuthor(), "author"));
+            if (rs != null) {
+                insertResultSetIntoGivenArray(rs, entitiesList);
+            }
         } catch (SQLException e){
-            //Что подойдет бизнес уровню?
+            throw e;
+        } catch (IndexOutOfBoundsException e) {
+            throw e;
         } finally {
             c.close();
         }
 
-        List<BookEntity> entitiesList = new ArrayList<BookEntity>();
-        if (rs != null) {
-            insertResultSetIntoGivenArray(rs, entitiesList);
-        }
         return entitiesList;
     }
-    public List<BookEntity> selectBookByTitle(BookEntity bookEntity) throws SQLException, IndexOutOfBoundsException{
+    public List<BookEntity> selectBookByTitle(BookEntity bookEntity) throws SQLException, NullPointerException{
+        c = dbConnector.connect();
         Statement stmt = c.createStatement();
+
         ResultSet rs = null;
+        List<BookEntity> entitiesList = new ArrayList<BookEntity>();
 
         try {
             rs = stmt.executeQuery(buildSelectStatementByParameter(bookEntity.getTitle(), "title"));
+            if (rs != null) {
+                insertResultSetIntoGivenArray(rs, entitiesList);
+            }
         } catch (SQLException e){
-            //что подойдет бизнес уровню?
+            throw e;
+        } catch (IndexOutOfBoundsException e) {
+            throw e;
         } finally {
             c.close();
         }
 
-        List<BookEntity> entitiesList = new ArrayList<BookEntity>();
-        if(rs!=null) {
-            insertResultSetIntoGivenArray(rs, entitiesList);
-        }
         return entitiesList;
     }
-    public BookEntity insertBook(BookEntity bookEntity) throws SQLException {
+    public BookEntity insertBook(BookEntity bookEntity) throws SQLException, NullPointerException {
+        c = dbConnector.connect();
         Statement stmt = c.createStatement();
+
         try {
             stmt.executeUpdate(buildInsertStatementByGivenBook(bookEntity));
         } catch (SQLException e){
-            //Что подойдет бизнес уровню?
+            throw e;
         } finally {
             c.close();
         }
@@ -88,7 +89,7 @@ public class BookRepositoryImpl implements BookRepository{
      * @return SQL statement that allows us to get info about all books
      */
     private String buildSelectStatement(){
-        return "select title,author,published_in from devschema.library;";
+        return "select title,author,published_in from library;";
     }
     /**
      * Creates Select SQL statement by given parameters
@@ -97,7 +98,7 @@ public class BookRepositoryImpl implements BookRepository{
      * @return SQL statement that allows us to get info from database
      */
     private String buildSelectStatementByParameter(String parameter, String type){
-        return "select title,author,published_in from devschema.library " +
+        return "select title,author,published_in from library " +
                 "where " + type + "='" + parameter +"';";
     }
     /**
@@ -106,7 +107,7 @@ public class BookRepositoryImpl implements BookRepository{
      * @return SQL statement that allows us to insert given info into database
      */
     private String buildInsertStatementByGivenBook(BookEntity book){
-        return "Insert into devschema.library (title, author, published_in) "
+        return "Insert into library (title, author, published_in) "
                 + "VALUES ('" + book.getTitle() + "','" + book.getAuthor() + "'," + book.getPublished_in() +");";
     }
     /**
@@ -114,21 +115,17 @@ public class BookRepositoryImpl implements BookRepository{
      * @param rs ResultSet that we got after making a select request
      * @param books empty ArrayList, where we will hold books
      */
-    private void insertResultSetIntoGivenArray(ResultSet rs, List<BookEntity> books){
-        try{
-            while(rs.next()){
-                books.add(new BookEntity(
-                        rs.getString(1).trim(),
-                        rs.getString(2).trim(),
-                        Integer.valueOf(rs.getString(3)))
-                );
-            }
-        } catch (SQLException e){
-            throw new IndexOutOfBoundsException("Couldn't handle request result");
+    private void insertResultSetIntoGivenArray(ResultSet rs, List<BookEntity> books) throws SQLException{
+        while(rs.next()){
+            books.add(new BookEntity(
+                    rs.getString(1).trim(),
+                    rs.getString(2).trim(),
+                    Integer.valueOf(rs.getString(3))));
         }
     }
     private class DBConnector implements Connector{
-        private final String url = "jdbc:postgresql://localhost/ablam";
+        //private final String url = "jdbc:postgresql://localhost/ablam";
+        private final String url = "jdbc:h2:./database/library";
         private final String user = "ablam";
         private final String password = "delamland";
 
