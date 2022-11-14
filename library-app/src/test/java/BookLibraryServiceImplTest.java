@@ -5,53 +5,89 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import org.mockito.Mock;
-import org.mockito.MockingDetails;
 import org.mockito.MockitoAnnotations;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class BookLibraryServiceImplTest {
     BookLibraryServiceImpl service;
+    BookEntity emptyEntity;
     @Mock
     BookRepositoryImpl impl;
     @Before
     public void setup(){
         MockitoAnnotations.openMocks(this);
+        service = new BookLibraryServiceImpl(impl);
+        emptyEntity = new BookEntity();
     }
     @Test
-    public void getAllBooks_returnBooks() throws Exception {
-        System.out.println("TEST getAllBooks_returnBooks is executed");
-        service = new BookLibraryServiceImpl(impl);
+    public void getAllBooks_returnBooks() {
+        List<BookEntity> entities = new ArrayList<>();
 
+        List<Book> books = new ArrayList<>();
+
+        when(impl.selectAllBooks()).thenReturn(entities);
+
+        assertEquals(books, service.getAllBooks());
+    }
+    @Test
+    public void getAllBooks_returnsEmptyList_whenBooksDontExist() {
         List<BookEntity> entities = new ArrayList<BookEntity>();
-        BookEntity entity = new BookEntity("testName", "testTitle", 1111);
-        entities.add(entity);
+
+        when(impl.selectAllBooks()).thenReturn(entities);
+
+        assertEquals(Collections.EMPTY_LIST, service.getAllBooks());
+    }
+    @Test
+    public void getBooksByAuthor_returnBooks() {
+        List<BookEntity> entities = new ArrayList<>();
+
+        List<Book> books = new ArrayList<>();
+
+        when(impl.selectBooksByAuthor(emptyEntity)).thenReturn(entities);
+
+        assertEquals(books, service.getBooksByAuthor(""));
+    }
+    @Test
+    public void getBooksByAuthor_returnsEmptyList_whenBooksDontExist() {
+        List<BookEntity> entities = new ArrayList<BookEntity>();
+
+        when(impl.selectBooksByAuthor(emptyEntity)).thenReturn(entities);
+
+        assertEquals(Collections.EMPTY_LIST, service.getBooksByAuthor(""));
+    }@Test
+    public void getBookByTitle_returnBooks() {
+        List<BookEntity> entities = new ArrayList<BookEntity>();
 
         List<Book> books = new ArrayList<Book>();
 
-        when(impl.selectAllBooks()).thenReturn(entities);
+        when(impl.selectBookByTitle(emptyEntity)).thenReturn(entities);
 
-        assertEquals(service.getAllBooks().getClass(), books.getClass());
+        assertEquals(books, service.getAllBooks());
     }
     @Test
-    public void getAllBooks_returnsEmptyList_whenBooksDontExist() throws Exception {
-        System.out.println("TEST getAllBooks_returnsEmptyList_whenBooksDontExist is executed");
-        service = new BookLibraryServiceImpl(impl);
-
+    public void getBookByTitle_returnsEmptyList_whenBookDoesntExist() {
         List<BookEntity> entities = new ArrayList<BookEntity>();
+        when(impl.selectBookByTitle(emptyEntity)).thenReturn(entities);
 
-        when(impl.selectAllBooks()).thenReturn(entities);
-
-        assertEquals(service.getAllBooks(), Collections.EMPTY_LIST);
+        assertEquals(Collections.EMPTY_LIST, service.getBookByTitle(""));
     }
-    @Test(expected = Exception.class)
-    public void getAllBooks_throwsException_whenProblemWithAccess() throws Exception {
-        System.out.println("TEST getAllBooks_throwsException_whenProblemWithAccess is executed");
-        service = new BookLibraryServiceImpl(null);
+    @Test
+    public void insertBook_returnsBook(){
+        Book book = new Book();
+        when(impl.insertBook(emptyEntity)).thenReturn(emptyEntity);
 
-        service.getAllBooks();
+        assertEquals(book, service.insertBook("", "", 0));
+    }
+    @Test
+    public void insertBook_insertsCorrectBook(){
+        Book book = new Book("author", "title", 1111);
+        BookEntity entity = new BookEntity("author", "title", 1111);
+
+        when(impl.insertBook(entity)).thenReturn(entity);
+
+        assertEquals(book, service.insertBook("title", "author", 1111));
     }
 }

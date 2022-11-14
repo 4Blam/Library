@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 /**
  * This class implements a book entity in database
  */
@@ -14,7 +16,11 @@ public class BookEntity {
      * Year when book that is represented by this entity was published
      */
     private int published_in;
-    public BookEntity() {}
+    public BookEntity() {
+        this.author = "";
+        this.title = "";
+        this.published_in = 0;
+    }
     public BookEntity(String author, String title, int published_in) {
         this.author = author;
         this.title = title;
@@ -44,4 +50,15 @@ public class BookEntity {
     public void setPublished_in(int published_in) {
         this.published_in = published_in;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BookEntity entity = (BookEntity) o;
+        return published_in == entity.published_in &&
+                Objects.equals(author, entity.author) &&
+                Objects.equals(title, entity.title);
+    }
+
 }

@@ -14,17 +14,6 @@ public class Client {
     public static void main(String[] args){
         Client client = new Client();
         System.out.print(client.instruction);
-        int action = 0;
-        try {
-            action = client.actionHandler.scanner.nextInt();
-            if ((action < 1) || (action > 4)){
-                throw new InputMismatchException();
-            }
-        } catch (InputMismatchException e){
-            System.out.println("Wrong input, enter integer from 1 to 4");
-            client.actionHandler.scanner.close();
-            return;
-        }
-        client.actionHandler.handleAction(action);
+        client.actionHandler.handleAction(client.actionHandler.scanner.nextInt());
     }
 }

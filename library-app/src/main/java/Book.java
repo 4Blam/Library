@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 /**
  * This class implements a Book in library
  */
@@ -14,7 +16,11 @@ public class Book {
      * Year, when book was published
      */
     private int published_in;
-    public Book(){}
+    public Book(){
+        this.author = "";
+        this.title = "";
+        this.published_in = 0;
+    }
     public Book(String author, String title, int published_in) {
         this.author = author;
         this.title = title;
@@ -50,5 +56,14 @@ public class Book {
         return "Title: " + title +
                 ", Author: " + author +
                 ", Published in: " + published_in;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return published_in == book.published_in &&
+                Objects.equals(author, book.author) &&
+                Objects.equals(title, book.title);
     }
 }

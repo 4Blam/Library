@@ -2,131 +2,75 @@ import java.sql.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Repository-level class, where we connect to our database, and get data by specified requests
  */
 public class BookRepositoryImpl implements BookRepository{
     private final DBConnector dbConnector;
-    private Connection c;
+    static Logger logger = LoggerFactory.getLogger(BookRepositoryImpl.class);
     public BookRepositoryImpl(){
         this.dbConnector = new DBConnector();
     }
-    public List<BookEntity> selectAllBooks() throws IllegalAccessException, IllegalStateException, IllegalArgumentException {
-        ResultSet rs;
+    public List<BookEntity> selectAllBooks() {
         List<BookEntity> entitiesList = new ArrayList<>();
 
-        c = dbConnector.connect();
+        try (Connection c = dbConnector.connect();
+             Statement stmt = c.createStatement()) {
 
-        try {
-            Statement stmt = c.createStatement();
-            rs = stmt.executeQuery(buildSelectStatement());
+            ResultSet rs = stmt.executeQuery(buildSelectStatement());
+            mapResultSetToBookList(rs, entitiesList);
+
         } catch (SQLException e){
-
-            try{
-                c.close();
-            } catch (SQLException closingException){
-                throw new IllegalAccessException(closingException.getMessage());
-            }
-
-            throw new IllegalStateException(e.getMessage());
-        }
-
-        try {
-            insertResultSetIntoGivenArray(rs, entitiesList);
-        } catch (IllegalArgumentException e){
-            throw e;
-        } finally {
-            try {
-                c.close();
-            } catch (SQLException closingException){
-                throw new IllegalAccessException(closingException.getMessage());
-            }
+            logger.error(e.getMessage());
+            throw new RuntimeException();
         }
 
         return entitiesList;
     }
-    public List<BookEntity> selectBooksByAuthor(BookEntity bookEntity) throws IllegalAccessException, IllegalStateException, IllegalArgumentException {
-        ResultSet rs;
+    public List<BookEntity> selectBooksByAuthor(BookEntity bookEntity) {
         List<BookEntity> entitiesList = new ArrayList<>();
 
-        c = dbConnector.connect();
+        try (Connection c = dbConnector.connect();
+             Statement stmt = c.createStatement()) {
 
-        try {
-            Statement stmt = c.createStatement();
-            rs = stmt.executeQuery(buildSelectStatementByParameter(bookEntity.getAuthor(), "author"));
+            ResultSet rs = stmt.executeQuery(buildSelectStatementByParameter(bookEntity.getAuthor(), "author"));
+            mapResultSetToBookList(rs, entitiesList);
+
         } catch (SQLException e){
-
-            try{
-                c.close();
-            } catch (SQLException closingException){
-                throw new IllegalAccessException(closingException.getMessage());
-            }
-
-            throw new IllegalStateException(e.getMessage());
-        }
-
-        try {
-            insertResultSetIntoGivenArray(rs, entitiesList);
-        } catch (IllegalArgumentException e){
-            throw e;
-        } finally {
-            try {
-                c.close();
-            } catch (SQLException closingException){
-                throw new IllegalAccessException(closingException.getMessage());
-            }
+            logger.error(e.getMessage());
+            throw new RuntimeException();
         }
 
         return entitiesList;
     }
-    public List<BookEntity> selectBookByTitle(BookEntity bookEntity) throws IllegalAccessException, IllegalStateException, IllegalArgumentException {
-        ResultSet rs;
+    public List<BookEntity> selectBookByTitle(BookEntity bookEntity) {
         List<BookEntity> entitiesList = new ArrayList<>();
 
-        c = dbConnector.connect();
+        try (Connection c = dbConnector.connect();
+             Statement stmt = c.createStatement()) {
 
-        try {
-            Statement stmt = c.createStatement();
-            rs = stmt.executeQuery(buildSelectStatementByParameter(bookEntity.getTitle(), "title"));
+            ResultSet rs = stmt.executeQuery(buildSelectStatementByParameter(bookEntity.getTitle(), "title"));
+            mapResultSetToBookList(rs, entitiesList);
+
         } catch (SQLException e){
-
-            try{
-                c.close();
-            } catch (SQLException closingException){
-                throw new IllegalAccessException(closingException.getMessage());
-            }
-
-            throw new IllegalStateException(e.getMessage());
-        }
-
-        try {
-            insertResultSetIntoGivenArray(rs, entitiesList);
-        } catch (IllegalArgumentException e){
-            throw e;
-        } finally {
-            try {
-                c.close();
-            } catch (SQLException closingException){
-                throw new IllegalAccessException(closingException.getMessage());
-            }
+            logger.error(e.getMessage());
+            throw new RuntimeException();
         }
 
         return entitiesList;
     }
-    public BookEntity insertBook(BookEntity bookEntity) throws IllegalAccessException {
-        c = dbConnector.connect();
-        try {
-            Statement stmt = c.createStatement();
+    public BookEntity insertBook(BookEntity bookEntity) {
+        try (Connection c = dbConnector.connect();
+             Statement stmt = c.createStatement()) {
+
             stmt.executeUpdate(buildInsertStatementByGivenBook(bookEntity));
+
         } catch (SQLException e){
-            throw new IllegalStateException(e.getMessage());
-        } finally {
-            try {
-                c.close();
-            } catch (SQLException closingException){
-                throw new IllegalAccessException(closingException.getMessage());
-            }
+            logger.error(e.getMessage());
+            throw new RuntimeException();
         }
 
         return bookEntity;
@@ -164,31 +108,24 @@ public class BookRepositoryImpl implements BookRepository{
      * @param books empty ArrayList, where we will hold books
      * @throws IllegalArgumentException when there is something wrong with given ResultSet
      */
-    private void insertResultSetIntoGivenArray(ResultSet rs, List<BookEntity> books) throws IllegalArgumentException{
-        try {
-            while (rs.next()) {
-                books.add(new BookEntity(
-                        rs.getString(1).trim(),
-                        rs.getString(2).trim(),
-                        Integer.valueOf(rs.getString(3))));
-            }
-        } catch (SQLException e){
-            throw new IllegalArgumentException(e.getMessage());
+    private void mapResultSetToBookList(ResultSet rs, List<BookEntity> books) throws SQLException{
+        while (rs.next()) {
+            books.add(new BookEntity(
+                    rs.getString(1).trim(),
+                    rs.getString(2).trim(),
+                    Integer.parseInt(rs.getString(3))));
         }
     }
-    private class DBConnector implements Connector{
+
+   private static class DBConnector implements Connector{
         //private final String url = "jdbc:postgresql://localhost/ablam";
         private final String url = "jdbc:h2:./database/library";
         private final String user = "ablam";
         private final String password = "delamland";
 
-        public Connection connect() throws IllegalAccessException {
+        public Connection connect() throws SQLException{
             Connection conn;
-            try {
-                conn = DriverManager.getConnection(url, user, password);
-            } catch (SQLException e) {
-                throw new IllegalAccessException(e.getMessage());
-            }
+            conn = DriverManager.getConnection(url, user, password);
             return conn;
         }
     }
