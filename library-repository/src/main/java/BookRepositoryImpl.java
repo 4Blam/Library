@@ -24,6 +24,7 @@ public class BookRepositoryImpl implements BookRepository{
             mapResultSetToBookList(rs, entitiesList);
 
         } catch (SQLException e){
+            System.out.println(e.getMessage());
             logger.error(e.getMessage());
             throw new RuntimeException();
         }
