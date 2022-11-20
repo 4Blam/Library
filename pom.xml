@@ -12,6 +12,7 @@
     <module>library-web</module>
     <module>library-app</module>
     <module>library-repository</module>
+    <module>library-war</module>
   </modules>
 
   <packaging>pom</packaging>
