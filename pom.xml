@@ -9,9 +9,10 @@
   <version>1.1.1</version>
 
   <modules>
-    <module>library-repository</module>
-    <module>library-app</module>
-    <module>library-web</module>
+    <module>library-parent</module>
+    <module>library-parent/library-repository</module>
+    <module>library-parent/library-app</module>
+    <module>library-parent/library-web</module>
   </modules>
 
   <packaging>pom</packaging>

@@ -120,7 +120,7 @@ public class BookRepositoryImpl implements BookRepository{
 
    private static class DBConnector implements Connector{
         //private final String url = "jdbc:postgresql://localhost/ablam";
-        private final String url = "jdbc:h2:C:/Users/sblam/Library/library-repository/src/main/resources/database/library";
+        private final String url = "jdbc:h2:C:/Users/sblam/Library/library-parent/src/main/resources/database/library";
         private final String user = "ablam";
         private final String password = "delamland";
 
