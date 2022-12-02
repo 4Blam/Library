@@ -21,3 +21,9 @@ Syntax error in SQL statement "Create table library(id int auto_increment, title
 Create table library(id int auto_increment, title varchar(50), author varchar(50), published_in int [42001-214]
 2022-11-15 03:11:57.074 [main] ERROR BookRepositoryImpl - Table "LIBRARY" not found (this database is empty); SQL statement:
 select author,title,published_in from library; [42104-214]
+2022-44-02 14:44:01.388 [main] ERROR BookRepositoryImpl - Путь неявно является относительным для текущего рабочего каталога и не допустим в URL базы данных "jdbc:h2:library-repository/resources/database/library". Используйте абсолютный путь, ~/name, ./name, или настройку baseDir.
+A file path that is implicitly relative to the current working directory is not allowed in the database URL "jdbc:h2:library-repository/resources/database/library". Use an absolute path, ~/name, ./name, or the baseDir setting instead. [90011-210]
+2022-44-02 14:44:22.917 [main] ERROR BookRepositoryImpl - Table "LIBRARY" not found (this database is empty); SQL statement:
+select author,title,published_in from library; [42104-210]
+2022-45-02 14:45:01.630 [main] ERROR BookRepositoryImpl - Table "LIBRARY" not found (this database is empty); SQL statement:
+select author,title,published_in from library; [42104-210]

@@ -6,13 +6,12 @@
 
   <groupId>ablam</groupId>
   <artifactId>Library</artifactId>
-  <version>${my-project-version}</version>
+  <version>1.1.1</version>
 
   <modules>
-    <module>library-web</module>
-    <module>library-app</module>
     <module>library-repository</module>
-    <module>library-war</module>
+    <module>library-app</module>
+    <module>library-web</module>
   </modules>
 
   <packaging>pom</packaging>
@@ -104,13 +103,14 @@
           <version>3.8.0</version>
         </plugin>
         <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
-        </plugin>
-        <plugin>
           <artifactId>maven-war-plugin</artifactId>
           <version>3.2.2</version>
         </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.1</version>
+        </plugin>
+
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
           <version>2.5.2</version>
