@@ -1,0 +1,14 @@
+<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+    <servlet>
+        <servlet-name>GetBooksServlet</servlet-name>
+        <servlet-class>library-web.src.main.GetBooksServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetBooksServlet</servlet-name>
+        <url-pattern>/getBooks</url-pattern>
+    </servlet-mapping>
+</web-app>
