@@ -1,3 +1,4 @@
+import javax.interceptor.AroundInvoke;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -6,11 +7,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import javax.interceptor.Interceptors;
 
 @WebServlet(name = "GetBooksServlet", urlPatterns = "/library-parent/getBooks")
 public class GetBooksServlet extends HttpServlet {
     BookLibraryServiceImpl bookLibraryServiceImpl = new BookLibraryServiceImpl();
     @Override
+    @Interceptors(SimpleInterceptor.class)
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         List<Book> books;

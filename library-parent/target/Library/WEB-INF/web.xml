@@ -5,7 +5,7 @@
 <web-app>
     <servlet>
         <servlet-name>GetBooksServlet</servlet-name>
-        <servlet-class>library-web.src.main.GetBooksServlet</servlet-class>
+        <servlet-class>GetBooksServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>GetBooksServlet</servlet-name>

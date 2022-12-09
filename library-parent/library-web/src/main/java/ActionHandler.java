@@ -1,6 +1,8 @@
+import javax.interceptor.Interceptors;
 import java.util.List;
 import java.util.Scanner;
 
+@Interceptors(SimpleInterceptor.class)
 public class ActionHandler implements Handler{
     public Scanner scanner;
     public ActionHandler(){
@@ -11,21 +13,10 @@ public class ActionHandler implements Handler{
         BookLibraryServiceImpl bookLibraryServiceImpl = new BookLibraryServiceImpl();
 
         if(action == 1){
-            scanner.close();
             List<Book> books;
 
-            try {
-                books = bookLibraryServiceImpl.getAllBooks();
-            } catch (RuntimeException e){
-                System.out.println("Couldn't complete your request, something went wrong");
-                return;
-            }
+            books = bookLibraryServiceImpl.getAllBooks();
 
-            for (Book b : books){
-                System.out.println(b);
-            }
-
-            scanner.close();
             return;
         }
         if(action == 2){
@@ -62,13 +53,9 @@ public class ActionHandler implements Handler{
             try {
                 books = bookLibraryServiceImpl.getBooksByAuthor(author);
             } catch (RuntimeException e){
-                System.out.println("Couldn't complete your request, something went wrong");
                 return;
             }
 
-            for (Book b : books){
-                System.out.println(b);
-            }
 
             return;
         }
