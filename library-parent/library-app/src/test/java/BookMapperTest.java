@@ -1,4 +1,5 @@
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import repository.BookEntity;
 import service.Book;
 import service.BookMapper;
@@ -7,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 public class BookMapperTest {
     BookMapper mapper = new BookMapper();
-
     @Test
     public void bookToEntity_transformsCorrectly() {
         Book book = new Book("author", "title", 1111);

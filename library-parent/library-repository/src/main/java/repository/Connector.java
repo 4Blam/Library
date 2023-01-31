@@ -1,5 +1,7 @@
 package repository;
 
+import org.springframework.stereotype.Component;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 

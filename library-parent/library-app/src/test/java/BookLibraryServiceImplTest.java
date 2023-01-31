@@ -10,6 +10,7 @@ import repository.BookEntity;
 import repository.BookRepositoryImpl;
 import service.Book;
 import service.BookLibraryServiceImpl;
+import service.BookMapper;
 
 import java.util.ArrayList;
 import java.util.Collections;
