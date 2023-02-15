@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import repository.BookEntity;
 import repository.BookRepositoryImpl;
 
@@ -12,15 +14,18 @@ import repository.BookRepositoryImpl;
  * Service-level class, where we get info by requests from repository-level and send it back
  * to Web-level
  */
+
+@Service
 public class BookLibraryServiceImpl implements BookLibraryService {
-    private final BookRepositoryImpl bookRepositoryImpl;
-    private final BookMapper mapper;
-    public BookLibraryServiceImpl(){
-        this.bookRepositoryImpl = new BookRepositoryImpl();
-        this.mapper = new BookMapper();
-    }
-    public BookLibraryServiceImpl(BookRepositoryImpl repository){
-        this.bookRepositoryImpl = repository;
+    @Autowired
+    private BookRepositoryImpl bookRepositoryImpl;
+    @Autowired
+    private BookMapper mapper;
+    /*
+    Constructor, created for BookLibraryServiceImplTest
+     */
+    public BookLibraryServiceImpl(BookRepositoryImpl impl) {
+        this.bookRepositoryImpl = impl;
         this.mapper = new BookMapper();
     }
 

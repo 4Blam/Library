@@ -1,5 +1,9 @@
 package repository;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+
 import java.sql.*;
 
 import java.util.ArrayList;
@@ -8,12 +12,11 @@ import java.util.List;
 /**
  * Repository-level class, where we connect to our database, and get data by specified requests
  */
+@Repository
 public class BookRepositoryImpl implements BookRepository{
-    private final DBConnector dbConnector;
-    //static Logger logger = LoggerFactory.getLogger(repository.BookRepositoryImpl.class);
-    public BookRepositoryImpl(){
-        this.dbConnector = new DBConnector();
-    }
+    @Autowired
+    private DBConnector dbConnector;
+
     public List<BookEntity> selectAllBooks() {
         List<BookEntity> entitiesList = new ArrayList<>();
         try (Connection c = dbConnector.connect();
@@ -119,8 +122,8 @@ public class BookRepositoryImpl implements BookRepository{
                     Integer.parseInt(rs.getString(3))));
         }
     }
-
-   private static class DBConnector implements Connector{
+    @Component
+    private static class DBConnector implements Connector{
         private final String url = "jdbc:h2:./library-parent/library-web/src/main/resources/database";
         //private final String url = "jdbc:h2:~/WEB-INF/classes/database";
         private final String user = "ablam";
