@@ -7,6 +7,10 @@ import java.util.Objects;
  */
 public class Book {
     /**
+     * service.Book's id
+     */
+    private int id;
+    /**
      * service.Book's author
      */
     private String author;
@@ -19,15 +23,21 @@ public class Book {
      */
     private int published_in;
     public Book(){
+        this.id = 0;
         this.author = "";
         this.title = "";
         this.published_in = 0;
     }
-    public Book(String author, String title, int published_in) {
+    public Book(int id, String author, String title, int published_in) {
+        this.id = id;
         this.author = author;
         this.title = title;
         this.published_in = published_in;
     }
+
+    public int getId() { return id; }
+
+    public void setId(int id) { this.id = id; }
 
     public String getAuthor() {
         return author;
@@ -55,7 +65,8 @@ public class Book {
 
     @Override
     public String toString() {
-        return "Title: " + title +
+        return "ID: " + id +
+                ", Title: " + title +
                 ", Author: " + author +
                 ", Published in: " + published_in;
     }
@@ -64,8 +75,6 @@ public class Book {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return published_in == book.published_in &&
-                Objects.equals(author, book.author) &&
-                Objects.equals(title, book.title);
+        return id == book.id;
     }
 }

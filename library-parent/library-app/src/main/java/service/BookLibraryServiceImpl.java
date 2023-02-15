@@ -17,27 +17,27 @@ import repository.BookRepositoryImpl;
 
 @Service
 public class BookLibraryServiceImpl implements BookLibraryService {
+    private final BookRepositoryImpl bookRepositoryImpl;
+    private final BookMapper bookMapper;
     @Autowired
-    private BookRepositoryImpl bookRepositoryImpl;
-    @Autowired
-    private BookMapper mapper;
-    /*
-    Constructor, created for BookLibraryServiceImplTest
-     */
+    public BookLibraryServiceImpl(BookMapper bookMapper, BookRepositoryImpl bookRepositoryImpl){
+        this.bookRepositoryImpl = bookRepositoryImpl;
+        this.bookMapper = bookMapper;
+    }
     public BookLibraryServiceImpl(BookRepositoryImpl impl) {
         this.bookRepositoryImpl = impl;
-        this.mapper = new BookMapper();
+        this.bookMapper = new BookMapper();
     }
 
     @NotNull
-    public List<Book> getAllBooks() {
+    public List<BookWeb> getAllBooks() {
         List<BookEntity> entities;
-        List<Book> books = new ArrayList<>();
+        List<BookWeb> books = new ArrayList<>();
 
         entities = bookRepositoryImpl.selectAllBooks();
 
         for (BookEntity e : entities){
-            books.add(mapper.entityToBook(e));
+            books.add(bookMapper.bookToWeb(bookMapper.entityToBook(e)));
         }
 
         if(books.isEmpty()){
@@ -47,16 +47,36 @@ public class BookLibraryServiceImpl implements BookLibraryService {
         return books;
     }
     @NotNull
-    public List<Book> getBooksByAuthor(String author) {
+    public List<BookWeb> getBookById(int id) {
+        Book book = new Book();
+        book.setId(id);
+        List<BookEntity> entities;
+        List<BookWeb> books = new ArrayList<>();
+
+        entities = bookRepositoryImpl.selectBookById(bookMapper.bookToEntity(book));
+
+        for (BookEntity e : entities){
+            books.add(bookMapper.bookToWeb(bookMapper.entityToBook(e)));
+        }
+
+        if(books.isEmpty()){
+            return Collections.EMPTY_LIST;
+        }
+
+        return books;
+
+    }
+    @NotNull
+    public List<BookWeb> getBooksByAuthor(String author) {
         Book book = new Book();
         book.setAuthor(author);
         List<BookEntity> entities;
-        List<Book> books = new ArrayList<>();
+        List<BookWeb> books = new ArrayList<>();
 
-        entities = bookRepositoryImpl.selectBooksByAuthor(mapper.bookToEntity(book));
+        entities = bookRepositoryImpl.selectBooksByAuthor(bookMapper.bookToEntity(book));
 
         for (BookEntity e : entities){
-            books.add(mapper.entityToBook(e));
+            books.add(bookMapper.bookToWeb(bookMapper.entityToBook(e)));
         }
 
         if(books.isEmpty()){
@@ -66,16 +86,16 @@ public class BookLibraryServiceImpl implements BookLibraryService {
         return books;
     }
     @NotNull
-    public List<Book> getBookByTitle(String title) {
+    public List<BookWeb> getBookByTitle(String title) {
         Book book = new Book();
         book.setTitle(title);
         List<BookEntity> entities;
-        List<Book> books = new ArrayList<>();
+        List<BookWeb> books = new ArrayList<>();
 
-        entities = bookRepositoryImpl.selectBookByTitle(mapper.bookToEntity(book));
+        entities = bookRepositoryImpl.selectBookByTitle(bookMapper.bookToEntity(book));
 
         for (BookEntity e : entities){
-            books.add(mapper.entityToBook(e));
+            books.add(bookMapper.bookToWeb(bookMapper.entityToBook(e)));
         }
 
         if(books.isEmpty()){
@@ -85,13 +105,30 @@ public class BookLibraryServiceImpl implements BookLibraryService {
         return books;
 
     }
-    @NotNull
-    public Book insertBook(String title, String author, int year){
-        Book book = new Book(author, title, year);
+    public void insertBook(String title, String author, int year){
+        Book book = new Book(0, author, title, year);
         BookMapper mapper = new BookMapper();
-        BookEntity entity = bookRepositoryImpl.insertBook(mapper.bookToEntity(book));
-
-        return mapper.entityToBook(entity);
+        bookRepositoryImpl.insertBook(mapper.bookToEntity(book));
     }
-
+    public void deleteBookById(int id){
+        Book book = new Book(id, "", "", 0);
+        BookMapper mapper = new BookMapper();
+        BookEntity entity = mapper.bookToEntity(book);
+        bookRepositoryImpl.deleteBook(entity);
+    }
+    public void updateBookById(int id, String field, String value){
+        Book book = new Book(id, "", "", 0);
+        if(field.equals("author")) {
+            book.setAuthor(value);
+        }
+        if(field.equals("title")) {
+            book.setTitle(value);
+        }
+        if(field.equals("published_in")){
+            book.setPublished_in(Integer.parseInt(value));
+        }
+        BookMapper mapper = new BookMapper();
+        BookEntity entity = mapper.bookToEntity(book);
+        bookRepositoryImpl.updateBook(entity, field);
+    }
 }

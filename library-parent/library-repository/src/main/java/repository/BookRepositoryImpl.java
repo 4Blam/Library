@@ -14,24 +14,37 @@ import java.util.List;
  */
 @Repository
 public class BookRepositoryImpl implements BookRepository{
+    private final DBConnector dbConnector;
     @Autowired
-    private DBConnector dbConnector;
+    public BookRepositoryImpl(DBConnector dbConnector){
+        this.dbConnector = dbConnector;
+    }
 
     public List<BookEntity> selectAllBooks() {
         List<BookEntity> entitiesList = new ArrayList<>();
         try (Connection c = dbConnector.connect();
              Statement stmt = c.createStatement()) {
 
-            //stmt.executeUpdate("CREATE TABLE library (bookid serial, author varchar2(20),title varchar2(20), published_in number(10))");
-            //stmt.executeUpdate("Insert into library (author,title,published_in) values ('author1', 'title1', 1111);");
-
             ResultSet rs = stmt.executeQuery(buildSelectStatement());
             mapResultSetToBookList(rs, entitiesList);
 
         } catch (SQLException e){
-            System.out.println(e.getMessage());
-            //logger.error(e.getMessage());
-            throw new RuntimeException();
+            throw new RuntimeException(e.getMessage());
+        }
+
+        return entitiesList;
+    }
+    public List<BookEntity> selectBookById(BookEntity bookEntity) {
+        List<BookEntity> entitiesList = new ArrayList<>();
+
+        try (Connection c = dbConnector.connect();
+             Statement stmt = c.createStatement()) {
+
+            ResultSet rs = stmt.executeQuery(buildSelectIdStatementByParameter(bookEntity.getId()));
+            mapResultSetToBookList(rs, entitiesList);
+
+        } catch (SQLException e){
+            throw new RuntimeException(e.getMessage());
         }
 
         return entitiesList;
@@ -46,8 +59,7 @@ public class BookRepositoryImpl implements BookRepository{
             mapResultSetToBookList(rs, entitiesList);
 
         } catch (SQLException e){
-            //logger.error(e.getMessage());
-            throw new RuntimeException();
+            throw new RuntimeException(e.getMessage());
         }
 
         return entitiesList;
@@ -62,8 +74,7 @@ public class BookRepositoryImpl implements BookRepository{
             mapResultSetToBookList(rs, entitiesList);
 
         } catch (SQLException e){
-            //logger.error(e.getMessage());
-            throw new RuntimeException();
+            throw new RuntimeException(e.getMessage());
         }
 
         return entitiesList;
@@ -75,19 +86,47 @@ public class BookRepositoryImpl implements BookRepository{
             stmt.executeUpdate(buildInsertStatementByGivenBook(bookEntity));
 
         } catch (SQLException e){
-            //logger.error(e.getMessage());
-            throw new RuntimeException();
+            throw new RuntimeException(e.getMessage());
         }
 
         return bookEntity;
     }
+    public BookEntity deleteBook(BookEntity bookEntity){
+        try (Connection c = dbConnector.connect();
+             Statement stmt = c.createStatement()) {
 
+            stmt.executeUpdate(buildDeleteStatementByGivenBook(bookEntity));
+
+        } catch (SQLException e){
+            throw new RuntimeException(e.getMessage());
+        }
+        return bookEntity;
+    }
+
+    public BookEntity updateBook(BookEntity bookEntity, String field){
+        try (Connection c = dbConnector.connect();
+             Statement stmt = c.createStatement()) {
+            if(field.equals("author")) {
+                stmt.executeUpdate(buildUpdateAuthorStatementByGivenBook(bookEntity));
+            }
+            if(field.equals("title")) {
+                stmt.executeUpdate(buildUpdateTitleStatementByGivenBook(bookEntity));
+            }
+            if(field.equals("published_in")){
+                stmt.executeUpdate(buildUpdatePublishedInStatementByGivenBook(bookEntity));
+            }
+
+        } catch (SQLException e){
+            throw new RuntimeException(e.getMessage());
+        }
+        return bookEntity;
+    }
     /**
      * Creates Select * SQL statement
      * @return SQL statement that allows us to get info about all books
      */
     private String buildSelectStatement(){
-        return "select author,title,published_in from library;";
+        return "select * from library;";
     }
     /**
      * Creates Select SQL statement by given parameters
@@ -96,8 +135,17 @@ public class BookRepositoryImpl implements BookRepository{
      * @return SQL statement that allows us to get info from database
      */
     private String buildSelectStatementByParameter(String parameter, String type){
-        return "select author,title,published_in from library " +
+        return "select * from library " +
                 "where " + type + "='" + parameter +"';";
+    }
+    /**
+     * Creates Select SQL statement by given id
+     * @param id book's id
+     * @return SQL statement that allows us to get info from database
+     */
+    private String buildSelectIdStatementByParameter(int id){
+        return "select * from library " +
+                "where bookid=" + id +";";
     }
     /**
      * Creates Insert SQL statement with given parameters
@@ -109,6 +157,38 @@ public class BookRepositoryImpl implements BookRepository{
                 + "VALUES ('" + book.getTitle() + "','" + book.getAuthor() + "'," + book.getPublished_in() +");";
     }
     /**
+     * Creates Delete SQL statement with given parameters
+     * @param bookEntity bookentity, that represents a book that will be deleted (only id filled)
+     * @return SQL statement that allows us to insert given info into database
+     */
+    private String buildDeleteStatementByGivenBook(BookEntity bookEntity) {
+        return "Delete from library where bookid="+bookEntity.getId();
+    }
+    /**
+     * Creates Update author SQL statement with given parameters
+     * @param bookEntity bookentity that will help us find book to update and update it (id - to find, author - will be updated)
+     * @return SQL statement that allows us to update book's author in database
+     */
+    private String buildUpdateAuthorStatementByGivenBook(BookEntity bookEntity) {
+        return "Update library set author='"+bookEntity.getAuthor() +"' where bookid=" + bookEntity.getId()+";";
+    }
+    /**
+     * Creates Update title SQL statement with given parameters
+     * @param bookEntity bookentity that will help us find book to update and update it (id - to find, title - will be updated)
+     * @return SQL statement that allows us to update book's title in database
+     */
+    private String buildUpdateTitleStatementByGivenBook(BookEntity bookEntity) {
+        return "Update library set title='"+bookEntity.getTitle() +"' where bookid=" + bookEntity.getId()+";";
+    }
+    /**
+     * Creates Update published_in SQL statement with given parameters
+     * @param bookEntity bookentity that will help us find book to update and update it (id - to find, published_in - will be updated)
+     * @return SQL statement that allows us to update info about a book in database
+     */
+    private String buildUpdatePublishedInStatementByGivenBook(BookEntity bookEntity) {
+        return "Update library set published_in="+bookEntity.getPublished_in() +" where bookid=" + bookEntity.getId()+";";
+    }
+    /**
      * Inserts answer from database into ArrayList which we will send into service level
      * @param rs ResultSet that we got after making a select request
      * @param books empty ArrayList, where we will hold books
@@ -117,9 +197,10 @@ public class BookRepositoryImpl implements BookRepository{
     private void mapResultSetToBookList(ResultSet rs, List<BookEntity> books) throws SQLException{
         while (rs.next()) {
             books.add(new BookEntity(
-                    rs.getString(1).trim(),
+                    Integer.parseInt(rs.getString(1)),
                     rs.getString(2).trim(),
-                    Integer.parseInt(rs.getString(3))));
+                    rs.getString(3).trim(),
+                    Integer.parseInt(rs.getString(4))));
         }
     }
     @Component

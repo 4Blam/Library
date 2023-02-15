@@ -81,22 +81,6 @@ public class BookLibraryServiceImplTest {
 
         assertEquals(Collections.EMPTY_LIST, service.getBookByTitle(""));
     }
-    @Test
-    public void insertBook_returnsBook(){
-        Book book = new Book();
-        BookEntity emptyEntity = new BookEntity();
 
-        when(impl.insertBook(emptyEntity)).thenReturn(emptyEntity);
 
-        assertEquals(book, service.insertBook("", "", 0));
-    }
-    @Test
-    public void insertBook_insertsCorrectBook(){
-        Book book = new Book("author", "title", 1111);
-        BookEntity entity = new BookEntity("author", "title", 1111);
-
-        when(impl.insertBook(entity)).thenReturn(entity);
-
-        assertEquals(book, service.insertBook("title", "author", 1111));
-    }
 }

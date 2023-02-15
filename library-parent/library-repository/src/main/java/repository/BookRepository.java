@@ -17,6 +17,14 @@ public interface BookRepository {
      * @return ArrayList of bookEntities that represents all books in our library
      */
     List<BookEntity> selectAllBooks();
+
+    /**
+     * Performs actual select statement in our database and returns book
+     * with given id
+     * @param bookEntity bookEntity that contains only id
+     * @return ArrayList of bookEntities, that has the same id as bookEntity param (it's size is boolean)
+     */
+    List<BookEntity> selectBookById(BookEntity bookEntity);
     /**
      * Performs actual select statement in our database and returns all books
      * with given author
@@ -37,4 +45,20 @@ public interface BookRepository {
      * @return inserted bookEntity for validation
      */
     BookEntity insertBook(BookEntity bookEntity);
+    /**
+     * Performs a book update in our database
+     * @param bookEntity bookEntity that we will update in database
+     * @param field field to update
+     * @return ex bookEntity for validation
+     */
+    BookEntity updateBook(BookEntity bookEntity, String field);
+
+    /**
+     * Performs book deletion in our database
+     * @param bookEntity bookEntity which id is used to find a book to delete in our database
+     * @return ex bookEntity for validation
+     */
+    BookEntity deleteBook(BookEntity bookEntity);
+
+
 }
