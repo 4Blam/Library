@@ -30,14 +30,14 @@ public class BookLibraryServiceImpl implements BookLibraryService {
     }
 
     @NotNull
-    public List<BookWeb> getAllBooks() {
+    public List<Book> getAllBooks() {
         List<BookEntity> entities;
-        List<BookWeb> books = new ArrayList<>();
+        List<Book> books = new ArrayList<>();
 
         entities = bookRepositoryImpl.selectAllBooks();
 
         for (BookEntity e : entities){
-            books.add(bookMapper.bookToWeb(bookMapper.entityToBook(e)));
+            books.add(bookMapper.entityToBook(e));
         }
 
         if(books.isEmpty()){
@@ -47,16 +47,16 @@ public class BookLibraryServiceImpl implements BookLibraryService {
         return books;
     }
     @NotNull
-    public List<BookWeb> getBookById(int id) {
+    public List<Book> getBookById(int id) {
         Book book = new Book();
         book.setId(id);
         List<BookEntity> entities;
-        List<BookWeb> books = new ArrayList<>();
+        List<Book> books = new ArrayList<>();
 
         entities = bookRepositoryImpl.selectBookById(bookMapper.bookToEntity(book));
 
         for (BookEntity e : entities){
-            books.add(bookMapper.bookToWeb(bookMapper.entityToBook(e)));
+            books.add(bookMapper.entityToBook(e));
         }
 
         if(books.isEmpty()){
@@ -67,16 +67,16 @@ public class BookLibraryServiceImpl implements BookLibraryService {
 
     }
     @NotNull
-    public List<BookWeb> getBooksByAuthor(String author) {
+    public List<Book> getBooksByAuthor(String author) {
         Book book = new Book();
         book.setAuthor(author);
         List<BookEntity> entities;
-        List<BookWeb> books = new ArrayList<>();
+        List<Book> books = new ArrayList<>();
 
         entities = bookRepositoryImpl.selectBooksByAuthor(bookMapper.bookToEntity(book));
 
         for (BookEntity e : entities){
-            books.add(bookMapper.bookToWeb(bookMapper.entityToBook(e)));
+            books.add(bookMapper.entityToBook(e));
         }
 
         if(books.isEmpty()){
@@ -86,16 +86,16 @@ public class BookLibraryServiceImpl implements BookLibraryService {
         return books;
     }
     @NotNull
-    public List<BookWeb> getBookByTitle(String title) {
+    public List<Book> getBookByTitle(String title) {
         Book book = new Book();
         book.setTitle(title);
         List<BookEntity> entities;
-        List<BookWeb> books = new ArrayList<>();
+        List<Book> books = new ArrayList<>();
 
         entities = bookRepositoryImpl.selectBookByTitle(bookMapper.bookToEntity(book));
 
         for (BookEntity e : entities){
-            books.add(bookMapper.bookToWeb(bookMapper.entityToBook(e)));
+            books.add(bookMapper.entityToBook(e));
         }
 
         if(books.isEmpty()){

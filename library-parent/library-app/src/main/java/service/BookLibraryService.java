@@ -15,27 +15,27 @@ public interface BookLibraryService {
      * Gets array with all books in library
      * @return ArrayList with all books in library
      */
-    List<BookWeb> getAllBooks();
+    List<Book> getAllBooks();
 
     /**
      * Gets array with book with the specified id (array size is boolean)
      * @param id book's id
      * @return ArrayList that contains book with given id
      */
-    List<BookWeb> getBookById(int id);
+    List<Book> getBookById(int id);
     /**
      * Gets array with books with the specified author
      * @param author author's name and surname
      * @return ArrayList that contains books written by given author
      */
-    List<BookWeb> getBooksByAuthor(String author);
+    List<Book> getBooksByAuthor(String author);
 
     /**
      * Gets array with a book with given title
      * @param title book's title
      * @return ArrayList that contains books with given title
      */
-    List<BookWeb> getBookByTitle(String title);
+    List<Book> getBookByTitle(String title);
 
     /**
      * Insert given values into library

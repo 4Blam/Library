@@ -9,17 +9,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import service.BookLibraryServiceImpl;
-import service.BookWeb;
 
 import java.util.ArrayList;
 import java.util.List;
 @RestController
 @Slf4j
 public class LibraryController {
-    private final BookLibraryServiceImpl bookLibraryServiceImpl;
+    private final LibraryWebCore libraryWebCore;
     @Autowired
-    public LibraryController(BookLibraryServiceImpl bookLibraryServiceImpl){
-        this.bookLibraryServiceImpl = bookLibraryServiceImpl;
+    public LibraryController(LibraryWebCore libraryWebCore){
+        this.libraryWebCore = libraryWebCore;
     }
     @GetMapping("/")
     public String mainPage(){
@@ -27,8 +26,8 @@ public class LibraryController {
     }
     @GetMapping("/getAllBooks")
     public String getAllBooks() {
-        List<BookWeb> books;
-         books = bookLibraryServiceImpl.getAllBooks();
+         List<BookWeb> books;
+         books = libraryWebCore.getAllBooks();
          StringBuilder result = new StringBuilder();
          for(BookWeb book : books){
             result.append(book.toString()).append("<br>");
@@ -42,7 +41,7 @@ public class LibraryController {
     @GetMapping("/getBookById/")
     public String getBookById(@RequestParam(required = true) int id){
         List<BookWeb> books = new ArrayList<>();
-        books = bookLibraryServiceImpl.getBookById(id);
+        books = libraryWebCore.getBookById(id);
         StringBuilder result = new StringBuilder();
         if(books.size() == 0){
             result.append("There is no book with id = " + id +"<br>");
@@ -60,7 +59,7 @@ public class LibraryController {
     @GetMapping("/getBooksByAuthor/")
     public String getBooksByAuthor(@RequestParam(required = true) String author){
         List<BookWeb> books = new ArrayList<>();
-        books = bookLibraryServiceImpl.getBooksByAuthor(author);
+        books = libraryWebCore.getBooksByAuthor(author);
         StringBuilder result = new StringBuilder();
         if(books.size()==0){
            result.append("There's no books with author = '" + author + "'<br>");
@@ -80,7 +79,7 @@ public class LibraryController {
     @GetMapping("/getBookByTitle/")
     public String getBooksByTitle(@RequestParam(required = true) String title){
         List<BookWeb> books = new ArrayList<>();
-        books = bookLibraryServiceImpl.getBookByTitle(title);
+        books = libraryWebCore.getBookByTitle(title);
         StringBuilder result = new StringBuilder();
         if(books.size()==0) {
             result.append("There's no book with title = '" + title + "'<br>");
@@ -101,7 +100,7 @@ public class LibraryController {
     @GetMapping("/updateAuthor/")
     public RedirectView updateAuthor(@RequestParam(required = true) int id,
                                @RequestParam(required = true) String author){
-        bookLibraryServiceImpl.updateBookById(id, "author", author);
+        libraryWebCore.updateBookById(id, "author", author);
         return new RedirectView("updatedSuccessfully");
     }
     @GetMapping("/updateTitle")
@@ -109,7 +108,7 @@ public class LibraryController {
     @GetMapping("/updateTitle/")
     public RedirectView updateTitle(@RequestParam(required = true) int id,
                                @RequestParam(required = true) String title){
-        bookLibraryServiceImpl.updateBookById(id, "title", title);
+        libraryWebCore.updateBookById(id, "title", title);
         return new RedirectView("updatedSuccessfully");
     }
     @GetMapping("/updatePublished_in")
@@ -117,7 +116,7 @@ public class LibraryController {
     @GetMapping("/updatePublished_in/")
     public RedirectView updatePublished_in(@RequestParam(required = true) int id,
                                @RequestParam(required = true) int published_in){
-        bookLibraryServiceImpl.updateBookById(id, "published_in", "" + published_in);
+        libraryWebCore.updateBookById(id, "published_in", "" + published_in);
         return new RedirectView("updatedSuccessfully");
     }
     @GetMapping("*/updatedSuccessfully")
@@ -132,7 +131,7 @@ public class LibraryController {
     public RedirectView insert(@RequestParam(required = true) String title,
                                @RequestParam(required = true) String author,
                                @RequestParam(required = true) int published_in ){
-        bookLibraryServiceImpl.insertBook(title, author, published_in);
+        libraryWebCore.insertBook(title, author, published_in);
 
         return new RedirectView("insertedSuccessfully");
     }
@@ -146,7 +145,7 @@ public class LibraryController {
     }
     @GetMapping("/deleteBook/")
     public RedirectView delete(@RequestParam(required = true) int id){
-        bookLibraryServiceImpl.deleteBookById(id);
+        libraryWebCore.deleteBookById(id);
         return new RedirectView("deletedSuccessfully");
     }
     @GetMapping("/deleteBook/deletedSuccessfully")

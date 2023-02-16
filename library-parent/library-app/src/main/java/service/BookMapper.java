@@ -18,14 +18,5 @@ public class BookMapper {
                 bookEntity.getTitle(),
                 bookEntity.getPublished_in());
     }
-    public Book webToBook(BookWeb bookWeb){
-        return new Book(bookWeb.getId(), bookWeb.getAuthor(),
-                bookWeb.getTitle(),
-                bookWeb.getPublished_in());
-    }
-    public BookWeb bookToWeb(Book book){
-        return new BookWeb(book.getId(), book.getAuthor(),
-                book.getTitle(),
-                book.getPublished_in());
-    }
+
 }
