@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
-import service.BookLibraryServiceImpl;
 
-import java.util.ArrayList;
 import java.util.List;
 @RestController
 @Slf4j
@@ -20,136 +18,50 @@ public class LibraryController {
     public LibraryController(LibraryWebCore libraryWebCore){
         this.libraryWebCore = libraryWebCore;
     }
-    @GetMapping("/")
-    public String mainPage(){
-            return CreatedPages.mainPageHTML();
-    }
     @GetMapping("/getAllBooks")
-    public String getAllBooks() {
-         List<BookWeb> books;
-         books = libraryWebCore.getAllBooks();
-         StringBuilder result = new StringBuilder();
-         for(BookWeb book : books){
-            result.append(book.toString()).append("<br>");
-         }
-         return result.toString();
-    }
+    public List<BookWeb> getAllBooks() { return libraryWebCore.getAllBooks(); }
     @GetMapping("/getBookById")
-    public String getBooksId(){
-        return CreatedPages.startGettingIdHTML();
-    }
-    @GetMapping("/getBookById/")
-    public String getBookById(@RequestParam(required = true) int id){
-        List<BookWeb> books = new ArrayList<>();
-        books = libraryWebCore.getBookById(id);
-        StringBuilder result = new StringBuilder();
-        if(books.size() == 0){
-            result.append("There is no book with id = " + id +"<br>");
-        } else{
-            for(BookWeb book : books){
-                result.append(book.toString()).append("<br>");
-            }}
-        result.append("<button onclick=\"location.href = 'http://localhost:8080/';\" id=\"myButton\" class=\"float-left submit-button\" >Return home</button>\n");
-        return result.toString();
+    public List<BookWeb> getBookById(@RequestParam(required = true) int id){
+        return libraryWebCore.getBookById(id);
     }
     @GetMapping("/getBooksByAuthor")
-    public String getBooksAuthor(){
-        return CreatedPages.startGettingAuthorHTML();
+    public List<BookWeb> getBooksByAuthor(@RequestParam(required = true) String author){
+        return libraryWebCore.getBooksByAuthor(author);
     }
-    @GetMapping("/getBooksByAuthor/")
-    public String getBooksByAuthor(@RequestParam(required = true) String author){
-        List<BookWeb> books = new ArrayList<>();
-        books = libraryWebCore.getBooksByAuthor(author);
-        StringBuilder result = new StringBuilder();
-        if(books.size()==0){
-           result.append("There's no books with author = '" + author + "'<br>");
-        }else{
-            for(BookWeb book : books){
-                result.append(book.toString()).append("<br>");
-            }
-        }
-        result.append("<button onclick=\"location.href = 'http://localhost:8080/';\" id=\"myButton\" class=\"float-left submit-button\" >Return home</button>\n");
-        return result.toString();
-    }
-
     @GetMapping("/getBookByTitle")
-    public String getBooksTitle(){
-        return CreatedPages.startGettingTitleHTML();
-    }
-    @GetMapping("/getBookByTitle/")
-    public String getBooksByTitle(@RequestParam(required = true) String title){
-        List<BookWeb> books = new ArrayList<>();
-        books = libraryWebCore.getBookByTitle(title);
-        StringBuilder result = new StringBuilder();
-        if(books.size()==0) {
-            result.append("There's no book with title = '" + title + "'<br>");
-        }else {
-            for (BookWeb book : books) {
-                result.append(book.toString()).append("<br>");
-            }
-        }
-        result.append("<button onclick=\"location.href = 'http://localhost:8080/';\" id=\"myButton\" class=\"float-left submit-button\" >Return home</button>\n");
-        return result.toString();
-    }
-    @GetMapping("/updateField")
-    public String updateField(){
-        return CreatedPages.updateHtml();
+    public List<BookWeb> getBooksByTitle(@RequestParam(required = true) String title){
+        return libraryWebCore.getBookByTitle(title);
     }
     @GetMapping("/updateAuthor")
-    public String beginAutUpdate(){return CreatedPages.updateAuthorHtml();}
-    @GetMapping("/updateAuthor/")
-    public RedirectView updateAuthor(@RequestParam(required = true) int id,
+    public String updateAuthor(@RequestParam(required = true) int id,
                                @RequestParam(required = true) String author){
         libraryWebCore.updateBookById(id, "author", author);
-        return new RedirectView("updatedSuccessfully");
+        return "Successfully updated book with id = " + id + ", changed author to " + author;
     }
     @GetMapping("/updateTitle")
-    public String beginTitleUpdate(){return CreatedPages.updateTitleHtml();}
-    @GetMapping("/updateTitle/")
-    public RedirectView updateTitle(@RequestParam(required = true) int id,
+    public String updateTitle(@RequestParam(required = true) int id,
                                @RequestParam(required = true) String title){
         libraryWebCore.updateBookById(id, "title", title);
-        return new RedirectView("updatedSuccessfully");
+        return "Successfully updated book with id = " + id + ", changed title to " + title;
     }
     @GetMapping("/updatePublished_in")
-    public String beginPubUpdate(){return CreatedPages.updatePublishedInHtml();}
-    @GetMapping("/updatePublished_in/")
-    public RedirectView updatePublished_in(@RequestParam(required = true) int id,
+    public String updatePublished_in(@RequestParam(required = true) int id,
                                @RequestParam(required = true) int published_in){
         libraryWebCore.updateBookById(id, "published_in", "" + published_in);
-        return new RedirectView("updatedSuccessfully");
-    }
-    @GetMapping("*/updatedSuccessfully")
-    public String endUpdate(){
-        return CreatedPages.successUpdate();
+        return "Successfully updated book with id = " + id + ", changed published_in to " + published_in;
     }
     @GetMapping("/insertBook")
-    public String beginInsertion(){
-        return CreatedPages.insertPageHTML();
-    }
-    @GetMapping("/insertBook/")
-    public RedirectView insert(@RequestParam(required = true) String title,
+    public String insert(@RequestParam(required = true) String title,
                                @RequestParam(required = true) String author,
                                @RequestParam(required = true) int published_in ){
         libraryWebCore.insertBook(title, author, published_in);
-
-        return new RedirectView("insertedSuccessfully");
-    }
-    @GetMapping("/insertBook/insertedSuccessfully")
-    public String endInsertion(){
-        return CreatedPages.successInsert();
+        return "Successfully inserted a book with title = " + title + ", author = " + author + ", published in = " + published_in;
     }
     @GetMapping("/deleteBook")
-    public String startDeleting(){
-        return CreatedPages.deletePageHTML();
-    }
-    @GetMapping("/deleteBook/")
-    public RedirectView delete(@RequestParam(required = true) int id){
+    public String delete(@RequestParam(required = true) int id){
         libraryWebCore.deleteBookById(id);
-        return new RedirectView("deletedSuccessfully");
+        return "Successfully deleted a book with id = " + id;
     }
-    @GetMapping("/deleteBook/deletedSuccessfully")
-    public String endDeleting(){ return CreatedPages.successDelete();}
     @ExceptionHandler(RuntimeException.class)
     public RedirectView handleError(Exception ex) {
         log.error(ex.getMessage());

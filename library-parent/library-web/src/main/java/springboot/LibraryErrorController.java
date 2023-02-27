@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class LibraryErrorController implements ErrorController {
     @GetMapping("/error")
     String error() {
-        return "<h1>Sorry, internal error has occured</h1>";
+        return "Sorry, internal error has occured";
     }
 }
