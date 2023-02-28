@@ -3,6 +3,7 @@ package springboot;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -10,56 +11,121 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.util.List;
 @RestController
 @Slf4j
+@RequestMapping("/books")
 public class LibraryController {
     private final LibraryWebCore libraryWebCore;
     @Autowired
     public LibraryController(LibraryWebCore libraryWebCore){
         this.libraryWebCore = libraryWebCore;
     }
-    @GetMapping("/Books")
-    public List<BookWeb> getAllBooks() { return libraryWebCore.getAllBooks(); }
-    @GetMapping("/Books/Id")
-    public List<BookWeb> getBookById(@RequestParam(required = true) int id){
-        return libraryWebCore.getBookById(id);
+    @GetMapping("")
+    public ResponseEntity<List<BookDto>> getAllBooks() { return new ResponseEntity<>(libraryWebCore.getAllBooks(), HttpStatus.OK); }
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<List<BookDto>> getBookById(
+            @PathVariable("id") int id){
+
+        List<BookDto> bookDtos = libraryWebCore.getBookById(id);
+        if(bookDtos.size()!=0){
+            return new ResponseEntity<>(bookDtos, HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
     }
-    @GetMapping("/Books/Author")
-    public List<BookWeb> getBooksByAuthor(@RequestParam(required = true) String author){
-        return libraryWebCore.getBooksByAuthor(author);
+    @GetMapping(value = "/author/{author}")
+    public ResponseEntity<List<BookDto>> getBooksByAuthor(
+            @PathVariable("author") String author){
+
+        List<BookDto> bookDtos = libraryWebCore.getBooksByAuthor(author);
+        if(bookDtos.size()!=0){
+            return new ResponseEntity<>(bookDtos, HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
     }
-    @GetMapping("/Books/Title")
-    public List<BookWeb> getBooksByTitle(@RequestParam(required = true) String title){
-        return libraryWebCore.getBookByTitle(title);
+    @GetMapping("/title/{title}")
+    public ResponseEntity<List<BookDto>> getBooksByTitle(
+            @PathVariable("title") String title){
+
+        List<BookDto> bookDtos = libraryWebCore.getBookByTitle(title);
+        if(bookDtos.size()!=0){
+            return new ResponseEntity<>(bookDtos, HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
     }
-    @PutMapping("/Books/Author")
-    public String updateAuthor(@RequestParam(required = true) int id,
-                               @RequestParam(required = true) String author){
+    @PutMapping("/{id}/author/{author}")
+    public ResponseEntity<List<BookDto>> updateAuthor(
+            @PathVariable("id") int id,
+            @PathVariable("author") String author){
+
         libraryWebCore.updateBookById(id, "author", author);
-        return "Successfully updated book with id = " + id + ", changed author to " + author;
+        List<BookDto> bookDtos = libraryWebCore.getBookById(id);
+        if(bookDtos.size()!=0){
+            return new ResponseEntity<>(bookDtos, HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
     }
-    @PutMapping("/Books/Title")
-    public String updateTitle(@RequestParam(required = true) int id,
-                               @RequestParam(required = true) String title){
+    @PutMapping("/{id}/title/{title}")
+    public ResponseEntity<List<BookDto>> updateTitle(
+            @PathVariable("id") int id,
+            @PathVariable("title") String title){
+
         libraryWebCore.updateBookById(id, "title", title);
-        return "Successfully updated book with id = " + id + ", changed title to " + title;
+        List<BookDto> bookDtos = libraryWebCore.getBookById(id);
+        if(bookDtos.size()!=0){
+            return new ResponseEntity<>(bookDtos, HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
     }
-    @PutMapping("/Books/PublishedIn")
-    public String updatePublished_in(@RequestParam(required = true) int id,
-                               @RequestParam(required = true) int published_in){
+    @PutMapping("/{id}/published_in/{published_in}")
+    public ResponseEntity<List<BookDto>>  updatePublished_in(
+            @PathVariable("id") int id,
+            @PathVariable("published_in") int published_in){
+
         libraryWebCore.updateBookById(id, "published_in", "" + published_in);
-        return "Successfully updated book with id = " + id + ", changed published_in to " + published_in;
+
+        List<BookDto> bookDtos = libraryWebCore.getBookById(id);
+        if(bookDtos.size()!=0){
+            return new ResponseEntity<>(bookDtos, HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
     }
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/Books")
-    public String insert(@RequestParam(required = true) String title,
-                               @RequestParam(required = true) String author,
-                               @RequestParam(required = true) int published_in ){
+    @PostMapping("")
+    public ResponseEntity<List<BookDto>> insert(
+            @RequestParam() String title,
+            @RequestParam() String author,
+            @RequestParam() int published_in ){
+
         libraryWebCore.insertBook(title, author, published_in);
-        return "Successfully inserted a book with title = " + title + ", author = " + author + ", published in = " + published_in;
+        List<BookDto> bookDtos = libraryWebCore.getBookByTitle(title); //to change?
+        if(bookDtos.size()!=0){
+            return new ResponseEntity<>(bookDtos, HttpStatus.CREATED);
+        } else{
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
     }
-    @DeleteMapping("/Books/Id")
-    public String delete(@RequestParam(required = true) int id){
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> delete(
+            @PathVariable("id") int id){
+        class BooleanResultDto {
+                public boolean result = false;
+        }
+        BooleanResultDto booleanResultDto = new BooleanResultDto();
+        List<BookDto> bookDtosOld = libraryWebCore.getBookById(id);
+
         libraryWebCore.deleteBookById(id);
-        return "Successfully deleted a book with id = " + id;
+
+        if(bookDtosOld.size() == 0){
+            return new ResponseEntity<>(booleanResultDto, HttpStatus.NO_CONTENT);
+        } else {
+            booleanResultDto.result = true;
+            return new ResponseEntity<>(booleanResultDto, HttpStatus.OK);
+        }
     }
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     @ExceptionHandler(RuntimeException.class)

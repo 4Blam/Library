@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import service.Book;
 import service.BookLibraryServiceImpl;
-import service.BookMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,46 +11,46 @@ import java.util.List;
 @Component
 public class LibraryWebCore {
     private final BookLibraryServiceImpl bookLibraryServiceImpl;
-    private final BookWebMapper bookWebMapper;
+    private final BookDtoMapper bookDtoMapper;
 
     @Autowired
-    public LibraryWebCore(BookLibraryServiceImpl bookLibraryServiceImpl, BookWebMapper bookWebMapper){
+    public LibraryWebCore(BookLibraryServiceImpl bookLibraryServiceImpl, BookDtoMapper bookDtoMapper){
         this.bookLibraryServiceImpl = bookLibraryServiceImpl;
-        this.bookWebMapper = bookWebMapper;
+        this.bookDtoMapper = bookDtoMapper;
     }
 
-    public List<BookWeb> getAllBooks() {
+    public List<BookDto> getAllBooks() {
         List<Book> books = bookLibraryServiceImpl.getAllBooks();
-        List<BookWeb> webbooks = new ArrayList<>();
+        List<BookDto> webbooks = new ArrayList<>();
         for (Book b: books){
-            webbooks.add(bookWebMapper.bookToWeb(b));
+            webbooks.add(bookDtoMapper.bookToWeb(b));
         }
         return webbooks;
     }
 
-    public List<BookWeb> getBookById(int id) {
+    public List<BookDto> getBookById(int id) {
         List<Book> books = bookLibraryServiceImpl.getBookById(id);
-        List<BookWeb> webbooks = new ArrayList<>();
+        List<BookDto> webbooks = new ArrayList<>();
         for (Book b: books){
-            webbooks.add(bookWebMapper.bookToWeb(b));
+            webbooks.add(bookDtoMapper.bookToWeb(b));
         }
         return webbooks;
     }
 
-    public List<BookWeb> getBooksByAuthor(String author) {
+    public List<BookDto> getBooksByAuthor(String author) {
         List<Book> books = bookLibraryServiceImpl.getBooksByAuthor(author);
-        List<BookWeb> webbooks = new ArrayList<>();
+        List<BookDto> webbooks = new ArrayList<>();
         for (Book b: books){
-            webbooks.add(bookWebMapper.bookToWeb(b));
+            webbooks.add(bookDtoMapper.bookToWeb(b));
         }
         return webbooks;
     }
 
-    public List<BookWeb> getBookByTitle(String title) {
+    public List<BookDto> getBookByTitle(String title) {
         List<Book> books = bookLibraryServiceImpl.getBookByTitle(title);
-        List<BookWeb> webbooks = new ArrayList<>();
+        List<BookDto> webbooks = new ArrayList<>();
         for (Book b: books){
-            webbooks.add(bookWebMapper.bookToWeb(b));
+            webbooks.add(bookDtoMapper.bookToWeb(b));
         }
         return webbooks;
     }

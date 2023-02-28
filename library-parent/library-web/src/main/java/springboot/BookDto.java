@@ -3,7 +3,7 @@ package springboot;
 /**
  * This class implements a service.Book in library
  */
-public class BookWeb {
+public class BookDto {
     /**
      * service.Book's id
      */
@@ -20,13 +20,13 @@ public class BookWeb {
      * Year, when book was published
      */
     private int published_in;
-    public BookWeb(){
+    public BookDto(){
         this.id = 0;
         this.author = "";
         this.title = "";
         this.published_in = 0;
     }
-    public BookWeb(int id, String author, String title, int published_in) {
+    public BookDto(int id, String author, String title, int published_in) {
         this.id = id;
         this.author = author;
         this.title = title;
@@ -72,7 +72,7 @@ public class BookWeb {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BookWeb book = (BookWeb) o;
+        BookDto book = (BookDto) o;
         return id == book.id;
     }
 }
