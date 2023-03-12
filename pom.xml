@@ -16,7 +16,7 @@
     <servlet-version>3.1.0</servlet-version>
     <jstl-version>1.2</jstl-version>
     <interceptor-version>1.2.2</interceptor-version>
-    <spring-version>2.7.3</spring-version>
+    <spring-version>2.4.3</spring-version>
     <lombok-version>RELEASE</lombok-version>
 
     <junit-version>4.13.2</junit-version>

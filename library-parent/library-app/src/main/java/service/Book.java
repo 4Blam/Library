@@ -19,14 +19,14 @@ public class Book {
      */
     private String title;
     /**
-     * Year, when book was published
+     * ID of a publishing house book was published in
      */
     private int published_in;
     public Book(){
-        this.id = 0;
+        this.id = -1;
         this.author = "";
         this.title = "";
-        this.published_in = 0;
+        this.published_in = -1;
     }
     public Book(int id, String author, String title, int published_in) {
         this.id = id;

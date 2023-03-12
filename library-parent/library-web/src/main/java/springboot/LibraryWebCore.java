@@ -1,7 +1,9 @@
 package springboot;
 
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
 import service.Book;
 import service.BookLibraryServiceImpl;
 
@@ -19,48 +21,34 @@ public class LibraryWebCore {
         this.bookDtoMapper = bookDtoMapper;
     }
 
-    public List<BookDto> getAllBooks() {
+    public List<BookDtoOutput> getAllBooks(){
         List<Book> books = bookLibraryServiceImpl.getAllBooks();
-        List<BookDto> webbooks = new ArrayList<>();
+        List<BookDtoOutput> webbooks = new ArrayList<>();
         for (Book b: books){
-            webbooks.add(bookDtoMapper.bookToWeb(b));
+            webbooks.add(bookDtoMapper.bookToBookDtoOutput(b));
         }
         return webbooks;
     }
+    public BookDtoOutput getBookById(int id){
+        Book book = bookLibraryServiceImpl.getBookById(id);
 
-    public List<BookDto> getBookById(int id) {
-        List<Book> books = bookLibraryServiceImpl.getBookById(id);
-        List<BookDto> webbooks = new ArrayList<>();
-        for (Book b: books){
-            webbooks.add(bookDtoMapper.bookToWeb(b));
+        return bookDtoMapper.bookToBookDtoOutput(book);
+    }
+    public void updateBookByDto(BookDtoUpdate bookDto){
+        if(bookDto.getTitle()!=null) {
+            bookLibraryServiceImpl.updateBookById(bookDto.getBookID(), "title", bookDto.getTitle());
         }
-        return webbooks;
-    }
-
-    public List<BookDto> getBooksByAuthor(String author) {
-        List<Book> books = bookLibraryServiceImpl.getBooksByAuthor(author);
-        List<BookDto> webbooks = new ArrayList<>();
-        for (Book b: books){
-            webbooks.add(bookDtoMapper.bookToWeb(b));
+        if(bookDto.getAuthor()!=null){
+            bookLibraryServiceImpl.updateBookById(bookDto.getBookID(), "author", bookDto.getAuthor());
         }
-        return webbooks;
-    }
-
-    public List<BookDto> getBookByTitle(String title) {
-        List<Book> books = bookLibraryServiceImpl.getBookByTitle(title);
-        List<BookDto> webbooks = new ArrayList<>();
-        for (Book b: books){
-            webbooks.add(bookDtoMapper.bookToWeb(b));
+        if(bookDto.getPhID()!=null){
+            bookLibraryServiceImpl.updateBookById(bookDto.getBookID(), "published_in", String.valueOf(bookDto.getPhID()));
         }
-        return webbooks;
     }
-
-    public void updateBookById(int id, String field, String value) {
-        bookLibraryServiceImpl.updateBookById(id, field, value);
-    }
-
-    public void insertBook(String title, String author, int publishedIn) {
-        bookLibraryServiceImpl.insertBook(title, author, publishedIn);
+    public BookDtoOutput insertBook(String title, String author, int publishedIn) {
+        BookDtoOutput bdto = bookDtoMapper.bookToBookDtoOutput(bookLibraryServiceImpl.insertBook(title, author, publishedIn));
+        bdto = bookDtoMapper.bookToBookDtoOutput(bookLibraryServiceImpl.getBookById(bdto.getBookID()));
+        return bdto;
     }
 
     public void deleteBookById(int id) {

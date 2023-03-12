@@ -22,23 +22,9 @@ public interface BookRepository {
      * Performs actual select statement in our database and returns book
      * with given id
      * @param bookEntity bookEntity that contains only id
-     * @return ArrayList of bookEntities, that has the same id as bookEntity param (it's size is boolean)
+     * @return bookEntity, that has the same id as bookEntity param
      */
-    List<BookEntity> selectBookById(BookEntity bookEntity);
-    /**
-     * Performs actual select statement in our database and returns all books
-     * with given author
-     * @param bookEntity bookEntity that contains only author (title, year are null and 0)
-     * @return ArrayList of bookEntities, that has the same author as bookEntity param
-     */
-    List<BookEntity> selectBooksByAuthor(BookEntity bookEntity);
-    /**
-     * Performs actual select statement in our database and returns all books
-     * with given title
-     * @param bookEntity bookEntity that contains only title (author, year are null and 0)
-     * @return ArrayList of bookEntities, that has the same title as bookEntity param
-     */
-    List<BookEntity> selectBookByTitle(BookEntity bookEntity);
+    BookEntity selectBookById(BookEntity bookEntity);
     /**
      * Performs a book insertion into our database
      * @param bookEntity bookEntity that we will insert into database
@@ -59,6 +45,5 @@ public interface BookRepository {
      * @return ex bookEntity for validation
      */
     BookEntity deleteBook(BookEntity bookEntity);
-
 
 }

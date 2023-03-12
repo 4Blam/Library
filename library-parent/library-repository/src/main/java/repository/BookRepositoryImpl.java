@@ -24,7 +24,7 @@ public class BookRepositoryImpl implements BookRepository{
         List<BookEntity> entitiesList = new ArrayList<>();
         try (Connection c = dbConnector.connect();
              Statement stmt = c.createStatement()) {
-
+            //createDB();
             ResultSet rs = stmt.executeQuery(buildSelectStatement());
             mapResultSetToBookList(rs, entitiesList);
 
@@ -34,7 +34,7 @@ public class BookRepositoryImpl implements BookRepository{
 
         return entitiesList;
     }
-    public List<BookEntity> selectBookById(BookEntity bookEntity) {
+    public BookEntity selectBookById(BookEntity bookEntity) {
         List<BookEntity> entitiesList = new ArrayList<>();
 
         try (Connection c = dbConnector.connect();
@@ -46,50 +46,31 @@ public class BookRepositoryImpl implements BookRepository{
         } catch (SQLException e){
             throw new RuntimeException(e.getMessage());
         }
-
-        return entitiesList;
-    }
-    public List<BookEntity> selectBooksByAuthor(BookEntity bookEntity) {
-        List<BookEntity> entitiesList = new ArrayList<>();
-
-        try (Connection c = dbConnector.connect();
-             Statement stmt = c.createStatement()) {
-
-            ResultSet rs = stmt.executeQuery(buildSelectStatementByParameter(bookEntity.getAuthor(), "author"));
-            mapResultSetToBookList(rs, entitiesList);
-
-        } catch (SQLException e){
-            throw new RuntimeException(e.getMessage());
+        if(entitiesList.size()==0){
+            return new BookEntity(0, "", "", -1);
+        }else {
+            return entitiesList.get(0);
         }
-
-        return entitiesList;
-    }
-    public List<BookEntity> selectBookByTitle(BookEntity bookEntity) {
-        List<BookEntity> entitiesList = new ArrayList<>();
-
-        try (Connection c = dbConnector.connect();
-             Statement stmt = c.createStatement()) {
-
-            ResultSet rs = stmt.executeQuery(buildSelectStatementByParameter(bookEntity.getTitle(), "title"));
-            mapResultSetToBookList(rs, entitiesList);
-
-        } catch (SQLException e){
-            throw new RuntimeException(e.getMessage());
-        }
-
-        return entitiesList;
     }
     public BookEntity insertBook(BookEntity bookEntity) {
         try (Connection c = dbConnector.connect();
-             Statement stmt = c.createStatement()) {
+             PreparedStatement stmt = c.prepareStatement(buildInsertStatementByGivenBook(bookEntity),
+                     Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.executeUpdate(buildInsertStatementByGivenBook(bookEntity));
+            stmt.execute();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            int genkey = 0;
+
+            if (rs.next()){
+                genkey = rs.getInt(1);
+            }
+            //////////////////////Уточнить стоит ли тут возвращать такое или лучше сразу сделать гет по айдишнику
+            return new BookEntity(genkey, "", "", -1);
 
         } catch (SQLException e){
             throw new RuntimeException(e.getMessage());
         }
-
-        return bookEntity;
     }
     public BookEntity deleteBook(BookEntity bookEntity){
         try (Connection c = dbConnector.connect();
@@ -121,6 +102,20 @@ public class BookRepositoryImpl implements BookRepository{
         }
         return bookEntity;
     }
+    public void createDB(){
+        try (Connection c = dbConnector.connect();
+             Statement stmt = c.createStatement()) {
+
+            int rs = stmt.executeUpdate("CREATE TABLE library (" +
+                    "    bookid int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY," +
+                    "    title varchar(50) NOT NULL," +
+                    "    author varchar(50) NOT NULL," +
+                    "    published_in int);");
+
+        } catch (SQLException e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
     /**
      * Creates Select * SQL statement
      * @return SQL statement that allows us to get info about all books
@@ -143,6 +138,7 @@ public class BookRepositoryImpl implements BookRepository{
      * @param id book's id
      * @return SQL statement that allows us to get info from database
      */
+
     private String buildSelectIdStatementByParameter(int id){
         return "select * from library " +
                 "where bookid=" + id +";";
@@ -206,7 +202,7 @@ public class BookRepositoryImpl implements BookRepository{
     @Component
     private static class DBConnector implements Connector{
         private final String url = "jdbc:h2:./library-parent/library-web/src/main/resources/database";
-        //private final String url = "jdbc:h2:~/WEB-INF/classes/database";
+        //private final String url = "jdbc:h2:./BOOT-INF/classes/database";
         private final String user = "ablam";
         private final String password = "delamland";
 

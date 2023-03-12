@@ -1,5 +1,7 @@
 package repository;
 
+import java.lang.reflect.Field;
+
 /**
  * This class implements a book entity in database
  */
@@ -17,14 +19,14 @@ public class BookEntity {
      */
     private String title;
     /**
-     * Year when book that is represented by this entity was published
+     * ID of a publishing house book was published in
      */
     private int published_in;
     public BookEntity() {
-        this.id = 0;
-        this.author = "";
-        this.title = "";
-        this.published_in = 0;
+        this.id = -1;
+        this.author = null;
+        this.title = null;
+        this.published_in = -1;
     }
     public BookEntity(int id, String author, String title, int published_in) {
         this.id = id;
@@ -57,7 +59,37 @@ public class BookEntity {
     public void setPublished_in(int published_in) {
         this.published_in = published_in;
     }
-
+    public String buildingMultipleStatement(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("select * from library where ");
+        boolean added = false;
+        if(id != -1){
+            stringBuilder.append("bookid=" + id);
+            added=true;
+        }
+        if(title!=null){
+            if(added){
+                stringBuilder.append(" AND ");
+            }
+            stringBuilder.append("title='" +title+"'");
+            added=true;
+        }
+        if(author!=null){
+            if(added){
+                stringBuilder.append(" AND ");
+            }
+            added=true;
+            stringBuilder.append("author='"+author+"'");
+        }
+        if(published_in!=-1){
+            if(added){
+                stringBuilder.append(" AND ");
+            }
+            stringBuilder.append("published_in="+published_in+"");
+        }
+        stringBuilder.append(";");
+        return stringBuilder.toString();
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

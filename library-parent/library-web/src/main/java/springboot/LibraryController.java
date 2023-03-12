@@ -4,10 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.servlet.view.RedirectView;
+import service.Book;
 
 
+import java.net.ConnectException;
+import java.util.Collections;
 import java.util.List;
 @RestController
 @Slf4j
@@ -19,96 +24,54 @@ public class LibraryController {
         this.libraryWebCore = libraryWebCore;
     }
     @GetMapping("")
-    public ResponseEntity<List<BookDto>> getAllBooks() { return new ResponseEntity<>(libraryWebCore.getAllBooks(), HttpStatus.OK); }
+    public ResponseEntity<List<BookDtoOutput>> getAllBooks() {
+        List<BookDtoOutput> webbooks = libraryWebCore.getAllBooks();
+        if(webbooks.get(0).getBookID() == -503){
+            return new ResponseEntity<>(null, HttpStatus.SERVICE_UNAVAILABLE);
+        }
+        return new ResponseEntity<>(libraryWebCore.getAllBooks(), HttpStatus.OK);
+    }
     @GetMapping(value = "/{id}")
-    public ResponseEntity<List<BookDto>> getBookById(
+    public ResponseEntity<BookDtoOutput> getBookById(
             @PathVariable("id") int id){
 
-        List<BookDto> bookDtos = libraryWebCore.getBookById(id);
-        if(bookDtos.size()!=0){
-            return new ResponseEntity<>(bookDtos, HttpStatus.OK);
-        } else{
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        BookDtoOutput bookDtoOutput = libraryWebCore.getBookById(id);
+        if(bookDtoOutput.getBookID()==0){
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
+        if(bookDtoOutput.getBookID() == -503){
+            return new ResponseEntity<>(null, HttpStatus.SERVICE_UNAVAILABLE);
+        }
+        return new ResponseEntity<>(bookDtoOutput, HttpStatus.OK);
     }
-    @GetMapping(value = "/author/{author}")
-    public ResponseEntity<List<BookDto>> getBooksByAuthor(
-            @PathVariable("author") String author){
-
-        List<BookDto> bookDtos = libraryWebCore.getBooksByAuthor(author);
-        if(bookDtos.size()!=0){
-            return new ResponseEntity<>(bookDtos, HttpStatus.OK);
-        } else{
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+    @PutMapping("/")
+    public ResponseEntity<BookDtoOutput> update(BookDtoUpdate bookDto){
+        BookDtoOutput bookDtoOutput = libraryWebCore.getBookById(bookDto.getBookID());
+        if(bookDtoOutput.getBookID()==0){
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-    }
-    @GetMapping("/title/{title}")
-    public ResponseEntity<List<BookDto>> getBooksByTitle(
-            @PathVariable("title") String title){
-
-        List<BookDto> bookDtos = libraryWebCore.getBookByTitle(title);
-        if(bookDtos.size()!=0){
-            return new ResponseEntity<>(bookDtos, HttpStatus.OK);
-        } else{
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        if(bookDtoOutput.getBookID() == -503){
+            return new ResponseEntity<>(null, HttpStatus.SERVICE_UNAVAILABLE);
         }
-    }
-    @PutMapping("/{id}/author/{author}")
-    public ResponseEntity<List<BookDto>> updateAuthor(
-            @PathVariable("id") int id,
-            @PathVariable("author") String author){
-
-        libraryWebCore.updateBookById(id, "author", author);
-        List<BookDto> bookDtos = libraryWebCore.getBookById(id);
-        if(bookDtos.size()!=0){
-            return new ResponseEntity<>(bookDtos, HttpStatus.OK);
-        } else{
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        }
-    }
-    @PutMapping("/{id}/title/{title}")
-    public ResponseEntity<List<BookDto>> updateTitle(
-            @PathVariable("id") int id,
-            @PathVariable("title") String title){
-
-        libraryWebCore.updateBookById(id, "title", title);
-        List<BookDto> bookDtos = libraryWebCore.getBookById(id);
-        if(bookDtos.size()!=0){
-            return new ResponseEntity<>(bookDtos, HttpStatus.OK);
-        } else{
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        }
-    }
-    @PutMapping("/{id}/published_in/{published_in}")
-    public ResponseEntity<List<BookDto>>  updatePublished_in(
-            @PathVariable("id") int id,
-            @PathVariable("published_in") int published_in){
-
-        libraryWebCore.updateBookById(id, "published_in", "" + published_in);
-
-        List<BookDto> bookDtos = libraryWebCore.getBookById(id);
-        if(bookDtos.size()!=0){
-            return new ResponseEntity<>(bookDtos, HttpStatus.OK);
-        } else{
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        }
+        libraryWebCore.updateBookByDto(bookDto);
+        return new ResponseEntity<>(libraryWebCore.getBookById(bookDto.getBookID()), HttpStatus.OK);
     }
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("")
-    public ResponseEntity<List<BookDto>> insert(
-            @RequestParam() String title,
-            @RequestParam() String author,
-            @RequestParam() int published_in ){
+    @PostMapping("/")
+    public ResponseEntity<BookDtoOutput> insert(BookDtoCreate bookDto){
 
-        libraryWebCore.insertBook(title, author, published_in);
-        List<BookDto> bookDtos = libraryWebCore.getBookByTitle(title); //to change?
-        if(bookDtos.size()!=0){
-            return new ResponseEntity<>(bookDtos, HttpStatus.CREATED);
-        } else{
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        BookDtoOutput bookDtoOutput = libraryWebCore.insertBook(bookDto.getTitle(),bookDto.getAuthor(),bookDto.getPhID());
+
+        bookDtoOutput = libraryWebCore.getBookById(bookDtoOutput.getBookID());
+        if(bookDtoOutput.getBookID()==0) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-    }
+        if(bookDtoOutput.getBookID() == -503) {
+            return new ResponseEntity<>(null, HttpStatus.SERVICE_UNAVAILABLE);
+        }
+        return new ResponseEntity<>(bookDtoOutput, HttpStatus.CREATED);
 
+    }
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(
             @PathVariable("id") int id){
@@ -116,21 +79,20 @@ public class LibraryController {
                 public boolean result = false;
         }
         BooleanResultDto booleanResultDto = new BooleanResultDto();
-        List<BookDto> bookDtosOld = libraryWebCore.getBookById(id);
+        BookDtoOutput bookDtoOutput = libraryWebCore.getBookById(id);
 
         libraryWebCore.deleteBookById(id);
 
-        if(bookDtosOld.size() == 0){
-            return new ResponseEntity<>(booleanResultDto, HttpStatus.NO_CONTENT);
+        if(bookDtoOutput.getBookID() == 0){
+            return new ResponseEntity<>(booleanResultDto, HttpStatus.NOT_FOUND);
         } else {
             booleanResultDto.result = true;
             return new ResponseEntity<>(booleanResultDto, HttpStatus.OK);
         }
     }
-    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     @ExceptionHandler(RuntimeException.class)
-    public RedirectView handleError(Exception ex) {
+    public ResponseEntity<Object> handleError(Exception ex) {
         log.error(ex.getMessage());
-        return new RedirectView("error");
+        return new ResponseEntity<>(new ErrorDto(), HttpStatus.SERVICE_UNAVAILABLE);
     }
 }

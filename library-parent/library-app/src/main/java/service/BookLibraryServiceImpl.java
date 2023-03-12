@@ -46,69 +46,25 @@ public class BookLibraryServiceImpl implements BookLibraryService {
 
         return books;
     }
+
     @NotNull
-    public List<Book> getBookById(int id) {
+    public Book getBookById(int id) {
         Book book = new Book();
         book.setId(id);
-        List<BookEntity> entities;
-        List<Book> books = new ArrayList<>();
+        BookEntity entity;
 
-        entities = bookRepositoryImpl.selectBookById(bookMapper.bookToEntity(book));
 
-        for (BookEntity e : entities){
-            books.add(bookMapper.entityToBook(e));
-        }
+        entity = bookRepositoryImpl.selectBookById(bookMapper.bookToEntity(book));
 
-        if(books.isEmpty()){
-            return Collections.EMPTY_LIST;
-        }
+        book = bookMapper.entityToBook(entity);
 
-        return books;
+        return book;
 
     }
-    @NotNull
-    public List<Book> getBooksByAuthor(String author) {
-        Book book = new Book();
-        book.setAuthor(author);
-        List<BookEntity> entities;
-        List<Book> books = new ArrayList<>();
-
-        entities = bookRepositoryImpl.selectBooksByAuthor(bookMapper.bookToEntity(book));
-
-        for (BookEntity e : entities){
-            books.add(bookMapper.entityToBook(e));
-        }
-
-        if(books.isEmpty()){
-            return Collections.EMPTY_LIST;
-        }
-
-        return books;
-    }
-    @NotNull
-    public List<Book> getBookByTitle(String title) {
-        Book book = new Book();
-        book.setTitle(title);
-        List<BookEntity> entities;
-        List<Book> books = new ArrayList<>();
-
-        entities = bookRepositoryImpl.selectBookByTitle(bookMapper.bookToEntity(book));
-
-        for (BookEntity e : entities){
-            books.add(bookMapper.entityToBook(e));
-        }
-
-        if(books.isEmpty()){
-            return Collections.EMPTY_LIST;
-        }
-
-        return books;
-
-    }
-    public void insertBook(String title, String author, int year){
+    public Book insertBook(String title, String author, int year){
         Book book = new Book(0, author, title, year);
         BookMapper mapper = new BookMapper();
-        bookRepositoryImpl.insertBook(mapper.bookToEntity(book));
+        return bookMapper.entityToBook(bookRepositoryImpl.insertBook(mapper.bookToEntity(book)));
     }
     public void deleteBookById(int id){
         Book book = new Book(id, "", "", 0);
