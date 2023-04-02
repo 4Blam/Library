@@ -54,6 +54,7 @@
         <artifactId>javax.interceptor-api</artifactId>
         <version>${interceptor-version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-web</artifactId>

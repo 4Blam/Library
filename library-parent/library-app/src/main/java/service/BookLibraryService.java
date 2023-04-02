@@ -1,5 +1,8 @@
 package service;
 
+import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
 import java.util.List;
 /**
  * This interface provides two methods for getting books with specified parameters:
@@ -22,21 +25,21 @@ public interface BookLibraryService {
      * @param id book's id
      * @return book with given id
      */
-    Book getBookById(int id);
+    Book getBookById(long id);
     /**
      * Insert given values into library
      * @param title book's title
      * @param author book's author
-     * @param year year, when book was published
+     * @param phid PubHouse, where book was published
      * @return inserted book
      */
-    Book insertBook(String title, String author, int year);
+    Book insertBook(String title, String author, long phid);
     /**
      * Delete book from library by id
      * @param id book's id
      * @return
      */
-    void deleteBookById(int id);
+    void deleteBookById(long id);
 
     /**
      * Updates book in library by id
@@ -44,5 +47,11 @@ public interface BookLibraryService {
      * @param field field to update
      * @param data new field data
      */
-    void updateBookById(int id, String field, String data);
+    void updateBookById(long id, String field, String data);
+
+    /**
+     * Gets Hashmap with pairs of type <PHID; PHNAME>
+     * @return hashmap with described data
+     */
+    HashMap<Long, String> getPHInfo();
 }

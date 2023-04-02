@@ -9,7 +9,7 @@ public class Book {
     /**
      * service.Book's id
      */
-    private int id;
+    private long id;
     /**
      * service.Book's author
      */
@@ -21,23 +21,23 @@ public class Book {
     /**
      * ID of a publishing house book was published in
      */
-    private int published_in;
+    private long published_in;
     public Book(){
         this.id = -1;
         this.author = "";
         this.title = "";
         this.published_in = -1;
     }
-    public Book(int id, String author, String title, int published_in) {
+    public Book(long id, String author, String title, long published_in) {
         this.id = id;
         this.author = author;
         this.title = title;
         this.published_in = published_in;
     }
 
-    public int getId() { return id; }
+    public long getId() { return id; }
 
-    public void setId(int id) { this.id = id; }
+    public void setId(long id) { this.id = id; }
 
     public String getAuthor() {
         return author;
@@ -55,11 +55,11 @@ public class Book {
         this.title = title;
     }
 
-    public int getPublished_in() {
+    public long getPublished_in() {
         return published_in;
     }
 
-    public void setPublished_in(int published_in) {
+    public void setPublished_in(long published_in) {
         this.published_in = published_in;
     }
 

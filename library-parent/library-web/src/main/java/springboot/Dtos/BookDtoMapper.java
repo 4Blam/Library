@@ -1,9 +1,8 @@
-package springboot;
+package springboot.Dtos;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import service.Book;
 
@@ -18,7 +17,7 @@ public class BookDtoMapper {
     }
     public BookDtoOutput bookToBookDtoOutput(Book book){
 
-        int phID = book.getPublished_in();
+        long phID = book.getPublished_in();
         String phName = "";
 
         try {
@@ -26,12 +25,10 @@ public class BookDtoMapper {
             ResponseEntity<Object> res = restTemplate.getForEntity("http://localhost:8042/phs/" + phID, Object.class);
             HashMap<String, String> result = (HashMap<String, String>) res.getBody();
             phName = result.get("name");
+            //object-> create contract for client dto pubhouse
         } catch (HttpClientErrorException e){
             //404
-            phName = "No publishing house with id = " + phID + ", try to change it";
-        } catch (ResourceAccessException e){
-            book.setId(-503);
-            //throw 503
+            System.out.println("imhere");
         }
 
         return new BookDtoOutput(book.getId(), book.getAuthor(),

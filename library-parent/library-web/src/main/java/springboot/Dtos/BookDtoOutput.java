@@ -1,23 +1,23 @@
-package springboot;
+package springboot.Dtos;
 
 public class BookDtoOutput extends BookDto{
     /**
     * ID of a book
      */
-    int bookID;
+    long bookID;
     /**
      * Name of a Publishing house where book was published
      */
     String phName;
     public BookDtoOutput(){}
 
-    public BookDtoOutput(int bookID, String author, String title, String phName) {
+    public BookDtoOutput(long bookID, String author, String title, String phName) {
         super(author, title);
         this.bookID = bookID;
         this.phName = phName;
     }
 
-    public int getBookID() {
+    public long getBookID() {
         return bookID;
     }
 

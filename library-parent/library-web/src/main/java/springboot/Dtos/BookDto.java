@@ -1,4 +1,4 @@
-package springboot;
+package springboot.Dtos;
 
 /**
  * This class implements a Book in library

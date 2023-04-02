@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 import service.Book;
-import service.BookLibraryServiceImpl;
+import service.BookLibraryService;
 
 import java.io.IOException;
 
@@ -19,9 +18,9 @@ import java.io.IOException;
 public class BuyReturnController {
     @Autowired
     private JmsTemplate jmsTemplate;
-    private final BookLibraryServiceImpl bookLibraryService;
+    private final BookLibraryService bookLibraryService;
     @Autowired
-    public BuyReturnController(BookLibraryServiceImpl bookLibraryService){
+    public BuyReturnController(BookLibraryService bookLibraryService){
         this.bookLibraryService = bookLibraryService;
     }
 
@@ -29,22 +28,16 @@ public class BuyReturnController {
     public ResponseEntity<String> IncreasebyId(
             @PathVariable("id") int id) throws IOException {
         Book book = bookLibraryService.getBookById(id);
-        if(book.getId()>0){
-            jmsTemplate.convertAndSend("boughtInPhqueue", book.getPublished_in());
-            return new ResponseEntity<String>("PHID(where sold) = " + book.getPublished_in(), HttpStatus.OK);
-        } else{
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+        jmsTemplate.convertAndSend("boughtInPhQueue", book.getPublished_in());
+        return new ResponseEntity<String>("PHID(where bought) = " + book.getPublished_in(), HttpStatus.OK);
+
     }
+
     @GetMapping(value = "/return/{id}")
     public ResponseEntity<String> DecreaseById(
             @PathVariable("id") int id) throws IOException {
         Book book = bookLibraryService.getBookById(id);
-        if(book.getId()>0){
-            jmsTemplate.convertAndSend("returnedInPhqueue", book.getPublished_in());
-            return new ResponseEntity<String>("PHID(where returned) = " + book.getPublished_in(), HttpStatus.OK);
-        } else{
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+        jmsTemplate.convertAndSend("returnedInPhQueue", book.getPublished_in());
+        return new ResponseEntity<String>("PHID(where returned) = " + book.getPublished_in(), HttpStatus.OK);
     }
 }

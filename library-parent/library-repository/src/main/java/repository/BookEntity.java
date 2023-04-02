@@ -1,7 +1,5 @@
 package repository;
 
-import java.lang.reflect.Field;
-
 /**
  * This class implements a book entity in database
  */
@@ -9,7 +7,7 @@ public class BookEntity {
     /**
      * ID of a book that is represented by this entity
      */
-    private int id;
+    private long id;
     /**
      * Author of a book that is represented by this entity
      */
@@ -21,20 +19,20 @@ public class BookEntity {
     /**
      * ID of a publishing house book was published in
      */
-    private int published_in;
+    private long published_in;
     public BookEntity() {
         this.id = -1;
         this.author = null;
         this.title = null;
         this.published_in = -1;
     }
-    public BookEntity(int id, String author, String title, int published_in) {
+    public BookEntity(long id, String author, String title, long published_in) {
         this.id = id;
         this.author = author;
         this.title = title;
         this.published_in = published_in;
     }
-    public int getId() { return id; }
+    public long getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getAuthor() {
         return author;
@@ -52,11 +50,11 @@ public class BookEntity {
         this.title = title;
     }
 
-    public int getPublished_in() {
+    public long getPublished_in() {
         return published_in;
     }
 
-    public void setPublished_in(int published_in) {
+    public void setPublished_in(long published_in) {
         this.published_in = published_in;
     }
     public String buildingMultipleStatement(){

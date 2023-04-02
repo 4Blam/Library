@@ -20,7 +20,7 @@ import javax.jms.Session;
 
 @Configuration
 @EnableJms
-public class Configure {
+public class JMSConfig {
 
     @Value("${spring.activemq.broker-url}")
     String BROKER_URL;

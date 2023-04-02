@@ -1,14 +1,14 @@
 package service;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repository.BookEntity;
-import repository.BookRepositoryImpl;
+import repository.BookRepository;
 
 /**
  * Service-level class, where we get info by requests from repository-level and send it back
@@ -17,62 +17,41 @@ import repository.BookRepositoryImpl;
 
 @Service
 public class BookLibraryServiceImpl implements BookLibraryService {
-    private final BookRepositoryImpl bookRepositoryImpl;
-    private final BookMapper bookMapper;
+    private final BookRepository bookRepository;
+    private final BookTransformer bookTransformer;
+    private final PubHousesService pubHousesService;
     @Autowired
-    public BookLibraryServiceImpl(BookMapper bookMapper, BookRepositoryImpl bookRepositoryImpl){
-        this.bookRepositoryImpl = bookRepositoryImpl;
-        this.bookMapper = bookMapper;
+    public BookLibraryServiceImpl(BookTransformer bookTransformer, BookRepository bookRepository, PubHousesService pubHousesService){
+        this.bookRepository = bookRepository;
+        this.bookTransformer = bookTransformer;
+        this.pubHousesService = pubHousesService;
     }
-    public BookLibraryServiceImpl(BookRepositoryImpl impl) {
-        this.bookRepositoryImpl = impl;
-        this.bookMapper = new BookMapper();
-    }
-
     @NotNull
     public List<Book> getAllBooks() {
-        List<BookEntity> entities;
-        List<Book> books = new ArrayList<>();
-
-        entities = bookRepositoryImpl.selectAllBooks();
-
-        for (BookEntity e : entities){
-            books.add(bookMapper.entityToBook(e));
-        }
-
+        List<Book> books = bookTransformer.entitiesToBooks(bookRepository.selectAllBooks());
         if(books.isEmpty()){
             return Collections.EMPTY_LIST;
         }
-
         return books;
     }
 
     @NotNull
-    public Book getBookById(int id) {
+    public Book getBookById(long id) {
         Book book = new Book();
         book.setId(id);
-        BookEntity entity;
-
-
-        entity = bookRepositoryImpl.selectBookById(bookMapper.bookToEntity(book));
-
-        book = bookMapper.entityToBook(entity);
-
+        book = bookTransformer.entityToBook(bookRepository.selectBookById(bookTransformer.bookToEntity(book)));
         return book;
-
     }
-    public Book insertBook(String title, String author, int year){
-        Book book = new Book(0, author, title, year);
-        BookMapper mapper = new BookMapper();
-        return bookMapper.entityToBook(bookRepositoryImpl.insertBook(mapper.bookToEntity(book)));
+    public Book insertBook(String title, String author, long phid){
+        Book book = new Book(0, author, title, phid);
+        return bookTransformer.entityToBook(bookRepository.insertBook(bookTransformer.bookToEntity(book)));
     }
-    public void deleteBookById(int id){
+    public void deleteBookById(long id){
         Book book = new Book(id, "", "", 0);
-        BookMapper mapper = new BookMapper();
-        BookEntity entity = mapper.bookToEntity(book);
-        bookRepositoryImpl.deleteBook(entity);
+        BookEntity entity = bookTransformer.bookToEntity(book);
+        bookRepository.deleteBook(entity);
     }
-    public void updateBookById(int id, String field, String value){
+    public void updateBookById(long id, String field, String value){
         Book book = new Book(id, "", "", 0);
         if(field.equals("author")) {
             book.setAuthor(value);
@@ -83,8 +62,10 @@ public class BookLibraryServiceImpl implements BookLibraryService {
         if(field.equals("published_in")){
             book.setPublished_in(Integer.parseInt(value));
         }
-        BookMapper mapper = new BookMapper();
-        BookEntity entity = mapper.bookToEntity(book);
-        bookRepositoryImpl.updateBook(entity, field);
+        BookEntity entity = bookTransformer.bookToEntity(book);
+        bookRepository.updateBook(entity, field);
+    }
+    public HashMap<Long, String> getPHInfo(){
+        return pubHousesService.getPHNames();
     }
 }
