@@ -42,7 +42,6 @@ public class LibraryController {
                 libraryWebCore.getBookById(bookDto.getBookID()),
                 HttpStatus.OK);
     }
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/books")
     public ResponseEntity<BookDtoOutput> insert(BookDtoCreate bookDto){
         return new ResponseEntity<>(

@@ -22,6 +22,7 @@ public class BookRepositoryImpl implements BookRepository{
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
     public List<BookEntity> selectAllBooks(){
+        //initDB();
         String sql = "SELECT * FROM library";
         return jdbcTemplate.query(
                 sql,
@@ -86,10 +87,10 @@ public class BookRepositoryImpl implements BookRepository{
                 "title varchar(50) NOT NULL," +
                 "author varchar(50) NOT NULL," +
                 "published_in int);");
-        jdbcTemplate.execute("INSERT INTO library (title, author, published_in) VALUES (title1, author1, 1);");
-        jdbcTemplate.execute("INSERT INTO library (title, author, published_in) VALUES (title2, author2, 2);");
-        jdbcTemplate.execute("INSERT INTO library (title, author, published_in) VALUES (title4, author4, 4);");
-        jdbcTemplate.execute("INSERT INTO library (title, author, published_in) VALUES (title5, author5, 5);");
+        jdbcTemplate.execute("INSERT INTO library (title, author, published_in) VALUES ('title1', 'author1', 1);");
+        jdbcTemplate.execute("INSERT INTO library (title, author, published_in) VALUES ('title2', 'author2', 2);");
+        jdbcTemplate.execute("INSERT INTO library (title, author, published_in) VALUES ('title4', 'author4', 4);");
+        jdbcTemplate.execute("INSERT INTO library (title, author, published_in) VALUES ('title5', 'author5', 5);");
     }
 }
 
