@@ -16,14 +16,11 @@ public class BookDtoTransformer {
            if(pubHousesNames.get(b.getPublished_in()) == null){
                throw new IllegalArgumentException("User tried to insert incorrect PHID");
            }
-           webBooks.add(new BookDtoOutput(b.getId(), b.getAuthor(), b.getTitle(), pubHousesNames.get(b.getPublished_in())));
+           webBooks.add(new BookDtoOutput(b.getId().toString(), b.getAuthor(), b.getTitle(), pubHousesNames.get(b.getPublished_in())));
        }
        return webBooks;
    }
    public BookDtoOutput bookToBookDtoOutput(Book book, HashMap<Long,String> pubHousesNames){
-       if(pubHousesNames.get(book.getPublished_in()) == null){
-           throw new IllegalArgumentException("User tried to insert incorrect PHID");
-       }
-        return new BookDtoOutput(book.getId(), book.getAuthor(), book.getTitle(), pubHousesNames.get(book.getPublished_in()));
+        return new BookDtoOutput(book.getId().toString(), book.getAuthor(), book.getTitle(), pubHousesNames.get(book.getPublished_in()));
     }
 }

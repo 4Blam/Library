@@ -26,7 +26,7 @@ public class BuyReturnController {
 
     @GetMapping(value = "/buy/{id}", produces = "text/html")
     public ResponseEntity<String> IncreasebyId(
-            @PathVariable("id") int id) throws IOException {
+            @PathVariable("id") String id) throws IOException {
         Book book = bookLibraryService.getBookById(id);
         jmsTemplate.convertAndSend("boughtInPhQueue", book.getPublished_in());
         return new ResponseEntity<String>("PHID(where bought) = " + book.getPublished_in(), HttpStatus.OK);
@@ -35,7 +35,7 @@ public class BuyReturnController {
 
     @GetMapping(value = "/return/{id}")
     public ResponseEntity<String> DecreaseById(
-            @PathVariable("id") int id) throws IOException {
+            @PathVariable("id") String id) throws IOException {
         Book book = bookLibraryService.getBookById(id);
         jmsTemplate.convertAndSend("returnedInPhQueue", book.getPublished_in());
         return new ResponseEntity<String>("PHID(where returned) = " + book.getPublished_in(), HttpStatus.OK);

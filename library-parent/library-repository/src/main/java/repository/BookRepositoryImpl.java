@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Repository-level class, where we connect to our database, and get data by specified requests
@@ -28,7 +29,7 @@ public class BookRepositoryImpl implements BookRepository{
                 sql,
                 (rs, rowNum) ->
                         new BookEntity(
-                                rs.getLong("bookid"),
+                                rs.getString("bookid"),
                                 rs.getString("title"),
                                 rs.getString("author"),
                                 rs.getLong("published_in")
@@ -40,23 +41,16 @@ public class BookRepositoryImpl implements BookRepository{
 
         return jdbcTemplate.queryForObject(sql, new Object[]{bookEntity.getId()}, (rs, rowNum) ->
                 new BookEntity(
-                        rs.getLong("bookid"),
+                        rs.getString("bookid"),
                         rs.getString("title"),
                         rs.getString("author"),
                         rs.getLong("published_in")
                 ));
     }
     public BookEntity insertBook(BookEntity bookEntity) {
-        String sql = "INSERT INTO library (title, author, published_in) VALUES (?, ?, ?);";
+        String sql = "INSERT INTO library (bookid, title, author, published_in) VALUES (?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement pst = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            pst.setString(1, bookEntity.getTitle());
-            pst.setString(2, bookEntity.getAuthor());
-            pst.setLong(3, bookEntity.getPublished_in());
-            return pst;
-        }, keyHolder);
-        bookEntity.setId(keyHolder.getKey().intValue());
+        jdbcTemplate.update(sql, bookEntity.getId(), bookEntity.getTitle(), bookEntity.getAuthor(), bookEntity.getPublished_in());
         return bookEntity;
     }
 
@@ -83,14 +77,14 @@ public class BookRepositoryImpl implements BookRepository{
     }
     public void initDB(){
         jdbcTemplate.execute("CREATE TABLE library " +
-                "(bookid int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY," +
-                "title varchar(50) NOT NULL," +
-                "author varchar(50) NOT NULL," +
+                "(bookid varchar(36) NOT NULL UNIQUE PRIMARY KEY," +
+                "title varchar(100) NOT NULL," +
+                "author varchar(100) NOT NULL," +
                 "published_in int);");
-        jdbcTemplate.execute("INSERT INTO library (title, author, published_in) VALUES ('title1', 'author1', 1);");
-        jdbcTemplate.execute("INSERT INTO library (title, author, published_in) VALUES ('title2', 'author2', 2);");
-        jdbcTemplate.execute("INSERT INTO library (title, author, published_in) VALUES ('title4', 'author4', 4);");
-        jdbcTemplate.execute("INSERT INTO library (title, author, published_in) VALUES ('title5', 'author5', 5);");
+        jdbcTemplate.execute("INSERT INTO library (bookid, title, author, published_in) VALUES ('"+ UUID.randomUUID() +"','title1', 'author1', 1);");
+        jdbcTemplate.execute("INSERT INTO library (bookid, title, author, published_in) VALUES ('"+ UUID.randomUUID() +"','title2', 'author2', 2);");
+        jdbcTemplate.execute("INSERT INTO library (bookid, title, author, published_in) VALUES ('"+ UUID.randomUUID() +"','title4', 'author4', 4);");
+        jdbcTemplate.execute("INSERT INTO library (bookid, title, author, published_in) VALUES ('"+ UUID.randomUUID() +"','title5', 'author5', 5);");
     }
 }
 

@@ -8,6 +8,7 @@ import springboot.Dtos.BookDtoOutput;
 import springboot.Dtos.BookDtoUpdate;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class LibraryWebCore {
@@ -25,7 +26,7 @@ public class LibraryWebCore {
                 bookLibraryService.getAllBooks(),
                 bookLibraryService.getPHInfo());
     }
-    public BookDtoOutput getBookById(long id){
+    public BookDtoOutput getBookById(String id){
         return bookDtoTransformer.bookToBookDtoOutput(
                 bookLibraryService.getBookById(id),
                 bookLibraryService.getPHInfo());
@@ -33,7 +34,9 @@ public class LibraryWebCore {
     public void updateBookByDto(BookDtoUpdate bookDto){
         if(bookDto.getPhID()!=0){
             //Testing if there's a ph with given id
-            bookDtoTransformer.bookToBookDtoOutput(new Book(0, "", "", bookDto.getPhID()), bookLibraryService.getPHInfo());
+            if(bookLibraryService.getPHInfo().get(bookDto.getPhID()) == null){
+                throw new IllegalArgumentException("User tried to insert incorrect PHID");
+            }
             //Updating
             bookLibraryService.updateBookById(bookDto.getBookID(), "published_in", String.valueOf(bookDto.getPhID()));
         }
@@ -46,14 +49,16 @@ public class LibraryWebCore {
     }
     public BookDtoOutput insertBook(String title, String author, long publishedIn) {
         //Testing if there's a ph with given Id
-        bookDtoTransformer.bookToBookDtoOutput(new Book(0, "", "", publishedIn), bookLibraryService.getPHInfo());
+        if(bookLibraryService.getPHInfo().get(publishedIn) == null){
+            throw new IllegalArgumentException("User tried to insert incorrect PHID");
+        }
         //Inserting
         return bookDtoTransformer.bookToBookDtoOutput(
                 bookLibraryService.insertBook(title, author, publishedIn),
                 bookLibraryService.getPHInfo());
     }
 
-    public void deleteBookById(long id) {
+    public void deleteBookById(String id) {
         bookLibraryService.deleteBookById(id);
     }
 }
