@@ -1,14 +1,14 @@
 package service;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repository.BookEntity;
-import repository.BookRepositoryImpl;
+import repository.BookRepository;
 
 /**
  * Service-level class, where we get info by requests from repository-level and send it back
@@ -17,81 +17,55 @@ import repository.BookRepositoryImpl;
 
 @Service
 public class BookLibraryServiceImpl implements BookLibraryService {
+    private final BookRepository bookRepository;
+    private final BookTransformer bookTransformer;
+    private final PubHousesService pubHousesService;
     @Autowired
-    private BookRepositoryImpl bookRepositoryImpl;
-    @Autowired
-    private BookMapper mapper;
-    /*
-    Constructor, created for BookLibraryServiceImplTest
-     */
-    public BookLibraryServiceImpl(BookRepositoryImpl impl) {
-        this.bookRepositoryImpl = impl;
-        this.mapper = new BookMapper();
+    public BookLibraryServiceImpl(BookTransformer bookTransformer, BookRepository bookRepository, PubHousesService pubHousesService){
+        this.bookRepository = bookRepository;
+        this.bookTransformer = bookTransformer;
+        this.pubHousesService = pubHousesService;
     }
-
     @NotNull
     public List<Book> getAllBooks() {
-        List<BookEntity> entities;
-        List<Book> books = new ArrayList<>();
-
-        entities = bookRepositoryImpl.selectAllBooks();
-
-        for (BookEntity e : entities){
-            books.add(mapper.entityToBook(e));
-        }
-
+        List<Book> books = bookTransformer.entitiesToBooks(bookRepository.selectAllBooks());
         if(books.isEmpty()){
             return Collections.EMPTY_LIST;
         }
-
         return books;
     }
+
     @NotNull
-    public List<Book> getBooksByAuthor(String author) {
+    public Book getBookById(long id) {
         Book book = new Book();
-        book.setAuthor(author);
-        List<BookEntity> entities;
-        List<Book> books = new ArrayList<>();
-
-        entities = bookRepositoryImpl.selectBooksByAuthor(mapper.bookToEntity(book));
-
-        for (BookEntity e : entities){
-            books.add(mapper.entityToBook(e));
-        }
-
-        if(books.isEmpty()){
-            return Collections.EMPTY_LIST;
-        }
-
-        return books;
+        book.setId(id);
+        book = bookTransformer.entityToBook(bookRepository.selectBookById(bookTransformer.bookToEntity(book)));
+        return book;
     }
-    @NotNull
-    public List<Book> getBookByTitle(String title) {
-        Book book = new Book();
-        book.setTitle(title);
-        List<BookEntity> entities;
-        List<Book> books = new ArrayList<>();
-
-        entities = bookRepositoryImpl.selectBookByTitle(mapper.bookToEntity(book));
-
-        for (BookEntity e : entities){
-            books.add(mapper.entityToBook(e));
-        }
-
-        if(books.isEmpty()){
-            return Collections.EMPTY_LIST;
-        }
-
-        return books;
-
+    public Book insertBook(String title, String author, long phid){
+        Book book = new Book(0, author, title, phid);
+        return bookTransformer.entityToBook(bookRepository.insertBook(bookTransformer.bookToEntity(book)));
     }
-    @NotNull
-    public Book insertBook(String title, String author, int year){
-        Book book = new Book(author, title, year);
-        BookMapper mapper = new BookMapper();
-        BookEntity entity = bookRepositoryImpl.insertBook(mapper.bookToEntity(book));
-
-        return mapper.entityToBook(entity);
+    public void deleteBookById(long id){
+        Book book = new Book(id, "", "", 0);
+        BookEntity entity = bookTransformer.bookToEntity(book);
+        bookRepository.deleteBook(entity);
     }
-
+    public void updateBookById(long id, String field, String value){
+        Book book = new Book(id, "", "", 0);
+        if(field.equals("author")) {
+            book.setAuthor(value);
+        }
+        if(field.equals("title")) {
+            book.setTitle(value);
+        }
+        if(field.equals("published_in")){
+            book.setPublished_in(Integer.parseInt(value));
+        }
+        BookEntity entity = bookTransformer.bookToEntity(book);
+        bookRepository.updateBook(entity, field);
+    }
+    public HashMap<Long, String> getPHInfo(){
+        return pubHousesService.getPHNames();
+    }
 }

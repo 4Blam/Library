@@ -17,24 +17,33 @@ public interface BookRepository {
      * @return ArrayList of bookEntities that represents all books in our library
      */
     List<BookEntity> selectAllBooks();
+
     /**
-     * Performs actual select statement in our database and returns all books
-     * with given author
-     * @param bookEntity bookEntity that contains only author (title, year are null and 0)
-     * @return ArrayList of bookEntities, that has the same author as bookEntity param
+     * Performs actual select statement in our database and returns book
+     * with given id
+     * @param bookEntity bookEntity that contains only id
+     * @return bookEntity, that has the same id as bookEntity param
      */
-    List<BookEntity> selectBooksByAuthor(BookEntity bookEntity);
-    /**
-     * Performs actual select statement in our database and returns all books
-     * with given title
-     * @param bookEntity bookEntity that contains only title (author, year are null and 0)
-     * @return ArrayList of bookEntities, that has the same title as bookEntity param
-     */
-    List<BookEntity> selectBookByTitle(BookEntity bookEntity);
+    BookEntity selectBookById(BookEntity bookEntity);
     /**
      * Performs a book insertion into our database
      * @param bookEntity bookEntity that we will insert into database
      * @return inserted bookEntity for validation
      */
     BookEntity insertBook(BookEntity bookEntity);
+    /**
+     * Performs a book update in our database
+     * @param bookEntity bookEntity that we will update in database
+     * @param field field to update
+     * @return ex bookEntity for validation
+     */
+    BookEntity updateBook(BookEntity bookEntity, String field);
+
+    /**
+     * Performs book deletion in our database
+     * @param bookEntity bookEntity which id is used to find a book to delete in our database
+     * @return ex bookEntity for validation
+     */
+    BookEntity deleteBook(BookEntity bookEntity);
+
 }
