@@ -25,7 +25,7 @@ public interface BookLibraryService {
      * @param id book's id
      * @return book with given id
      */
-    Book getBookById(long id);
+    Book getBookById(String id);
     /**
      * Insert given values into library
      * @param title book's title
@@ -39,7 +39,7 @@ public interface BookLibraryService {
      * @param id book's id
      * @return
      */
-    void deleteBookById(long id);
+    void deleteBookById(String id);
 
     /**
      * Updates book in library by id
@@ -47,7 +47,7 @@ public interface BookLibraryService {
      * @param field field to update
      * @param data new field data
      */
-    void updateBookById(long id, String field, String data);
+    void updateBookById(String id, String field, String data);
 
     /**
      * Gets Hashmap with pairs of type <PHID; PHNAME>

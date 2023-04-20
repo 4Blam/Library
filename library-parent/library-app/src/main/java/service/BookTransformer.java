@@ -5,6 +5,8 @@ import repository.BookEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 @Component
 public class BookTransformer {
     public List<BookEntity> booksToEntities(List<Book> books){
@@ -22,12 +24,12 @@ public class BookTransformer {
         return books;
     }
     public BookEntity bookToEntity(Book book){
-        return new BookEntity(book.getId(), book.getAuthor(),
+        return new BookEntity(book.getId().toString(), book.getAuthor(),
                 book.getTitle(),
                 book.getPublished_in());
     }
     public Book entityToBook(BookEntity bookEntity){
-        return new Book(bookEntity.getId(), bookEntity.getAuthor(),
+        return new Book(UUID.fromString(bookEntity.getId()), bookEntity.getAuthor(),
                 bookEntity.getTitle(),
                 bookEntity.getPublished_in());
     }

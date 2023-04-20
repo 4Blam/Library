@@ -3,6 +3,7 @@ package service;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,23 +37,23 @@ public class BookLibraryServiceImpl implements BookLibraryService {
     }
 
     @NotNull
-    public Book getBookById(long id) {
+    public Book getBookById(String id) {
         Book book = new Book();
-        book.setId(id);
+        book.setId(UUID.fromString(id));
         book = bookTransformer.entityToBook(bookRepository.selectBookById(bookTransformer.bookToEntity(book)));
         return book;
     }
     public Book insertBook(String title, String author, long phid){
-        Book book = new Book(0, author, title, phid);
+        Book book = new Book(UUID.randomUUID(), author, title, phid);
         return bookTransformer.entityToBook(bookRepository.insertBook(bookTransformer.bookToEntity(book)));
     }
-    public void deleteBookById(long id){
-        Book book = new Book(id, "", "", 0);
+    public void deleteBookById(String id){
+        Book book = new Book(UUID.fromString(id), "", "", 0);
         BookEntity entity = bookTransformer.bookToEntity(book);
         bookRepository.deleteBook(entity);
     }
-    public void updateBookById(long id, String field, String value){
-        Book book = new Book(id, "", "", 0);
+    public void updateBookById(String id, String field, String value){
+        Book book = new Book(UUID.fromString(id), "", "", 0);
         if(field.equals("author")) {
             book.setAuthor(value);
         }

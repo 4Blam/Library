@@ -1,6 +1,7 @@
 package service;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * This class implements a service.Book in library
@@ -9,7 +10,7 @@ public class Book {
     /**
      * service.Book's id
      */
-    private long id;
+    private UUID id;
     /**
      * service.Book's author
      */
@@ -23,21 +24,21 @@ public class Book {
      */
     private long published_in;
     public Book(){
-        this.id = -1;
+        this.id = null;
         this.author = "";
         this.title = "";
         this.published_in = -1;
     }
-    public Book(long id, String author, String title, long published_in) {
+    public Book(UUID id, String author, String title, long published_in) {
         this.id = id;
         this.author = author;
         this.title = title;
         this.published_in = published_in;
     }
 
-    public long getId() { return id; }
+    public UUID getId() { return id; }
 
-    public void setId(long id) { this.id = id; }
+    public void setId(UUID id) { this.id = id; }
 
     public String getAuthor() {
         return author;
